@@ -288,8 +288,8 @@ const R = {
   st:["Toma primero la fruta con unas cucharadas de yogur de coco.","Riega las tortas con un hilo de AOVE y pon el pavo encima.","Acompaña con la infusión de salvia."],
   nota:"El pavo es ocasional: una vez por semana como mucho. El resto de días mejor huevo."},
  b3:{n:"Porridge de quinoa o arroz rojo con manzana y arándanos",c:"b",t:"25 min (sirve para 3 días)",
-  ing:[["Quinoa o arroz rojo",40,"g","cer"],["Manzana",0.5,"ud","fru"],["Arándanos",50,"g","fru"],["Bebida de arroz o de coco (sin azúcar)",200,"ml","des"],["Canela de Ceilán",0,"","des"],["Cúrcuma en polvo",0,"","des"],["Jengibre en polvo",0,"","des"],["Coco rallado",0,"","des"],["Semillas de calabaza",0,"","des"],["Proteína vegana (Iswari, plátano y vainilla)",0,"","her"]],
-  st:["Lava bien la quinoa o el arroz rojo y cuécelo. Si lo haces para 3 días, triplica la cantidad.","Añade la bebida vegetal, unos trocitos de manzana, canela, cúrcuma y jengibre, y dale un golpe de hervor. Si quieres, bátelo.","Guarda en la nevera en tarros de cristal, sin la fruta (se oxida).","Al servir, añade los arándanos, una cucharada de semillas de calabaza, coco rallado y la proteína vegana. Templa en un cazo, sin microondas."],
+  ing:[["Quinoa o arroz rojo",40,"g","cer"],["Manzana",0.5,"ud","fru"],["Arándanos",50,"g","fru"],["Bebida de arroz o de coco (sin azúcar)",200,"ml","des"],["Canela de Ceilán",0,"","des"],["Cúrcuma en polvo",0,"","des"],["Jengibre en polvo",0,"","des"],["Coco rallado",0,"","des"],["Semillas de calabaza",0,"","des"],["Proteína vegana Iswari (plátano y vainilla)",1,"cacito","her"]],
+  st:["Lava bien la quinoa o el arroz rojo y cuécelo. Si lo haces para 3 días, triplica la cantidad.","Añade la bebida vegetal, unos trocitos de manzana, canela, cúrcuma y jengibre, y dale un golpe de hervor. Si quieres, bátelo.","Guarda en la nevera en tarros de cristal, sin la fruta (se oxida).","Templa la ración del día en un cazo, sin microondas.","Al servir, añade los arándanos, una cucharada de semillas de calabaza y coco rallado.","Termina con un cacito de proteína vegana Iswari (sigue la dosis del envase) y remueve bien. Añádela al final, ya templado, para que no se apelmace."],
   nota:"Es el desayuno ideal para dejar hecho el domingo."},
 
  cf1:{n:"Merluza al horno con patata y judías verdes",c:"cf",t:"35 min",prev:"patata",plate:["Judías verdes y cebolla","Patata cocida y refrigerada","Merluza"],
@@ -593,7 +593,7 @@ function renderHoy(){
   ${mealCard({key:"ritual",cc:"var(--salvia)",badgeHtml:`<span class="badge" style="--cc:var(--salvia)"><span class="e">🥥</span></span>`,k:"Al levantarte",title:"Enjuague con aceite de coco",c,
      extra:`<p class="small">Una cucharada, y escúpelo en la papelera o en un papel, nunca en el desagüe.</p><span class="fchip"><span class="e">🍵</span>${esc(day.inf)}</span>`})}
   ${mealCard({key:"m-des",cc:CC.b,badgeHtml:badge(day.b),k:"Desayuno",tm:S.times.des,title:R[day.b].n,rec:day.b,c,
-     extra:`${day.bfFruit?`<div>Empieza por la fruta, con yogur de coco:</div>${fchip(day.bfFruit)}`:`<p class="note">${esc(R[day.b].t)}</p>`}${supPills(dk,"des")}`})}
+     extra:`${day.bfFruit?`<div>Empieza por la fruta, con yogur de coco:</div>${fchip(day.bfFruit)}`:`<p class="note">${esc(R[day.b].t)}</p>`}${day.b==="b3"?`<span class="fchip"><span class="e">💪</span>+ 1 cacito de proteína vegana</span>`:""}${supPills(dk,"des")}`})}
   ${mealCard({key:"m-mm",cc:"var(--curcuma)",badgeHtml:`<span class="badge" style="--cc:var(--curcuma)">${fe(day.mm)}</span>`,k:"Media mañana",title:`Un trozo de ${day.mm.toLowerCase()}`,c,
      extra:`<p class="note">Activa las enzimas digestivas antes de comer.</p>`})}
   ${mealCard({key:"m-com",cc:CC[L.c],badgeHtml:badge(day.l),k:`Comida ${tagHtml(day.l)}`,tm:S.times.com,title:L.n,rec:day.l,c,
@@ -689,7 +689,7 @@ function shoppingFor(mon){
 function fmtQty(q,u){
   if(u==="g")return q>=1000?`${(Math.round(q/100)/10).toString().replace(".",",")} kg`:`${Math.round(q/10)*10} g`;
   if(u==="ml")return q>=1000?`${(Math.round(q/100)/10).toString().replace(".",",")} l`:`${q} ml`;
-  const n=Math.ceil(q);if(u==="ud")return `${n}`;if(u==="diente")return `${n} ${n>1?"dientes":"diente"}`;if(u==="manojo")return `${n} ${n>1?"manojos":"manojo"}`;return `${n} ${u}`;
+  const n=Math.ceil(q);if(u==="ud")return `${n}`;if(u==="diente")return `${n} ${n>1?"dientes":"diente"}`;if(u==="cacito")return `${n} ${n>1?"cacitos":"cacito"}`;if(u==="manojo")return `${n} ${n>1?"manojos":"manojo"}`;return `${n} ${u}`;
 }
 function renderCompra(){
   const mon=addDays(START,weekSel*7),wk=ymd(mon);
