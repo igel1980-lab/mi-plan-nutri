@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1F5C52">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Mi plan">
+<meta name="apple-mobile-web-app-title" content="Mi plan">
+<title>Mi plan comida · Raquel</title>
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F5EF; --surface:#FFFFFF; --soft:#E7EDE4; --ink:#17312C; --muted:#5A6C66; --line:#DCE3D9;
+  --accent:#1F5C52; --accent-ink:#FFFFFF; --hero:#1F5C52; --hero-ink:#F3F5EF;
+  --salvia:#7E9C83; --curcuma:#D99A1E; --papaya:#E2724A; --mar:#3F86AE; --lenteja:#C2603A; --trigo:#B88A4A;
+  --done:#2F7A5B;
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --emoji:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  color-scheme: light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101A18; --surface:#18241F; --soft:#21302A; --ink:#E5ECE5; --muted:#9BABA4; --line:#2B3A34;
+    --accent:#76B8A9; --accent-ink:#0C1916; --hero:#1C4A42; --hero-ink:#EAF2EC;
+    --salvia:#8FB096; --curcuma:#E8B04A; --papaya:#EE8A63; --mar:#6AAAD0; --lenteja:#E07D57; --trigo:#D2A867; --done:#7CC7A0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101A18; --surface:#18241F; --soft:#21302A; --ink:#E5ECE5; --muted:#9BABA4; --line:#2B3A34;
+  --accent:#76B8A9; --accent-ink:#0C1916; --hero:#1C4A42; --hero-ink:#EAF2EC;
+  --salvia:#8FB096; --curcuma:#E8B04A; --papaya:#EE8A63; --mar:#6AAAD0; --lenteja:#E07D57; --trigo:#D2A867; --done:#7CC7A0;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--curcuma);outline-offset:2px;border-radius:8px}
+svg{max-width:100%}
+.app{max-width:560px;margin:0 auto;padding:10px 16px 110px}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-0.01em}
+h1{font-size:2rem;line-height:1.05;font-weight:800}
+h2{font-size:1.35rem;font-weight:700}
+h3{font-size:1.08rem;font-weight:700}
+p{margin:.3em 0}
+.muted{color:var(--muted)} .small{font-size:.9rem}
+.e{font-family:var(--emoji);font-style:normal;line-height:1}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 0 14px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:1.15rem}
+.brand svg{width:38px;height:38px;flex:none;border-radius:11px;box-shadow:0 2px 8px rgba(23,49,44,.18)}
+.brand small{display:block;font-family:var(--body);font-weight:400;font-size:.8rem;color:var(--muted)}
+.ghost{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:.9rem}
+
+/* Cabecera del día */
+.hero{background:var(--hero);color:var(--hero-ink);border-radius:26px;padding:18px 18px 16px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:var(--curcuma);opacity:.18}
+.hero h1{font-size:1.85rem}
+.hero .sub{opacity:.85;font-size:.92rem;margin-top:4px}
+.ring{width:78px;height:78px;position:relative;z-index:1}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-size:1.05rem}
+.hero .todaylink{color:var(--hero-ink)}
+.todaylink{background:none;border:0;color:var(--accent);text-decoration:underline;padding:0;font-size:.92rem}
+
+/* Tira de días */
+.strip{display:grid;grid-template-columns:36px repeat(7,1fr) 36px;gap:4px;align-items:center;margin:12px 0 4px}
+.strip .arrow{height:56px;border:0;background:none;font-size:1.5rem;color:var(--muted);padding:0}
+.strip .arrow:disabled{opacity:.25;cursor:default}
+.dpill{border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:6px 0 7px;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
+.dpill .w{font-size:.72rem;color:var(--muted);font-weight:700}
+.dpill .n{font-family:var(--display);font-weight:700;font-size:1.05rem}
+.dpill .dt{width:6px;height:6px;border-radius:50%;background:transparent}
+.dpill.part .dt{background:var(--curcuma)} .dpill.full .dt{background:var(--done)}
+.dpill[aria-current="date"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.dpill[aria-current="date"] .w{color:var(--bg);opacity:.8}
+.dpill.is-today:not([aria-current]){border-color:var(--accent);border-width:2px}
+.dpill:disabled{opacity:.35}
+.weekcap{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:12px}
+
+.now{background:var(--curcuma);color:#1d1a10;border-radius:20px;padding:14px 16px;margin:0 0 14px;display:flex;gap:12px;align-items:center}
+.now b{font-family:var(--display);font-size:1.05rem}
+.now button{margin-left:auto;background:#1d1a10;color:#fff;border:0;border-radius:999px;padding:8px 14px;font-weight:700;flex:none}
+
+/* Tarjetas de comida */
+.meal{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:14px;margin:0 0 12px;position:relative;overflow:hidden}
+.meal::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--cc,var(--salvia))}
+.meal-h{display:grid;grid-template-columns:52px 1fr 44px;gap:12px;align-items:center}
+.badge{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-size:1.75rem;background:color-mix(in srgb,var(--cc,var(--salvia)) 20%,var(--surface))}
+.badge svg{width:30px;height:30px}
+.meal-k{font-size:.82rem;color:var(--muted);font-weight:700;display:flex;gap:8px;align-items:center}
+.meal-k .tm{font-variant-numeric:tabular-nums}
+.meal-n{font-family:var(--display);font-weight:700;font-size:1.1rem;line-height:1.2;display:block;text-align:left;background:none;border:0;padding:0;margin-top:2px}
+button.meal-n{text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--ink) 25%,transparent);text-underline-offset:3px}
+.meal-b{margin:10px 0 0 64px}
+.note{font-size:.9rem;color:var(--muted);margin-top:6px}
+.fchip{display:inline-flex;align-items:center;gap:6px;background:var(--soft);border-radius:999px;padding:4px 12px 4px 6px;font-size:.92rem;margin:6px 6px 0 0}
+.fchip .e{font-size:1.15rem}
+.fchip svg{width:20px;height:20px}
+.tag{display:inline-block;white-space:nowrap;font-size:.78rem;font-weight:700;padding:2px 9px;border-radius:999px;background:color-mix(in srgb,var(--cc,var(--salvia)) 22%,transparent);color:var(--ink);vertical-align:middle}
+
+.tick{width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--surface);display:grid;place-items:center;padding:0;transition:background .15s,border-color .15s}
+.tick svg{width:20px;height:20px;opacity:0;transform:scale(.6);transition:opacity .15s,transform .15s}
+.tick svg path{stroke:var(--bg)}
+.tick[aria-pressed="true"],.item[aria-pressed="true"] .tick{background:var(--done);border-color:var(--done)}
+.tick[aria-pressed="true"] svg,.item[aria-pressed="true"] .tick svg{opacity:1;transform:none}
+.tick.sm{width:34px;height:34px} .tick.sm svg{width:16px;height:16px}
+
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pill{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px 6px 6px;font-size:.9rem}
+.pill .dot{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;flex:none;font-size:.8rem}
+.pill .dot svg{width:13px;height:13px;display:none}
+.pill .dot svg path{stroke:var(--bg)}
+.pill[aria-pressed="true"]{border-color:var(--done);background:color-mix(in srgb,var(--done) 10%,var(--surface))}
+.pill[aria-pressed="true"] .dot{background:var(--done);border-color:var(--done)}
+.pill[aria-pressed="true"] .dot svg{display:block} .pill[aria-pressed="true"] .dot .pe{display:none}
+.pill .q{font-weight:700}
+
+.plate-wrap{display:grid;grid-template-columns:118px 1fr;gap:14px;align-items:center;margin-top:10px}
+.plate-legend{display:grid;gap:6px;font-size:.9rem}
+.plate-legend span.k{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:middle}
+button.platebtn{all:unset;cursor:pointer;display:block}
+
+.water{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:10px}
+.glass{aspect-ratio:3/4;border:2px solid var(--line);border-radius:5px 5px 12px 12px;background:var(--surface);padding:0;position:relative;overflow:hidden}
+.glass::after{content:"";position:absolute;left:0;right:0;bottom:0;height:0;background:var(--mar);opacity:.7;transition:height .25s}
+.glass[aria-pressed="true"]::after{height:80%}
+textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px;resize:vertical;margin-top:8px}
+input[type="text"],input[type="search"],input[type="time"]{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:10px 12px;width:100%;min-width:0}
+
+.section{margin:24px 0 10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px 16px;margin:10px 0}
+.card.sun{background:color-mix(in srgb,var(--curcuma) 16%,var(--surface));border-color:transparent}
+.card.fest{background:color-mix(in srgb,var(--papaya) 16%,var(--surface));border-color:transparent}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:10px 16px;font-weight:700}
+.btn.alt{background:var(--soft);color:var(--ink)}
+
+/* Calendario */
+.wkchips{display:flex;gap:8px;overflow-x:auto;padding:4px 16px 10px;margin:0 -16px;scrollbar-width:none}
+.wkchips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;white-space:nowrap;font-size:.9rem}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
+.cal .hd{text-align:center;font-size:.75rem;color:var(--muted);font-weight:700;padding-bottom:2px}
+.cell{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:4px 2px 5px;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
+.cell .n{font-family:var(--display);font-weight:700;font-size:.9rem}
+.cell .ee{font-family:var(--emoji);font-size:.95rem;line-height:1.1;letter-spacing:-1px}
+.cell.cur{border-color:var(--ink);border-width:2px}
+.cell.today{background:var(--hero);color:var(--hero-ink);border-color:var(--hero)}
+.cell.fest .n::after{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--papaya);margin-left:2px;vertical-align:top}
+.cal .mo{grid-column:1/-1;font-family:var(--display);font-weight:700;margin:8px 0 2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.85rem;color:var(--muted);margin-top:8px}
+
+.dayc{background:var(--surface);border:1px solid var(--line);border-radius:22px;margin:10px 0;overflow:hidden}
+.dayc-h{display:flex;justify-content:space-between;align-items:center;padding:12px 16px 8px}
+.dayc-h button{background:none;border:0;padding:0;color:var(--accent);font-size:.9rem;text-decoration:underline}
+.row{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:center;padding:8px 16px;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line)}
+.row .badge{width:42px;height:42px;font-size:1.35rem;border-radius:13px}
+.row .k{font-size:.78rem;color:var(--muted);font-weight:700;display:block}
+.dayc.is-today{border-color:var(--accent);border-width:2px}
+
+.sup{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.sup:last-child{border-bottom:0}
+.sup .dose{font-family:var(--display);font-weight:800;font-size:1.15rem;letter-spacing:.06em}
+.dosekey{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;font-size:.75rem;color:var(--muted)}
+.times{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.times label{font-size:.85rem;color:var(--muted);min-width:0}
+.times input{padding:8px 6px}
+.streak{display:flex;gap:6px;margin-top:8px}
+.streak .d{flex:1;text-align:center;font-size:.78rem;color:var(--muted)}
+.streak .b{height:36px;border-radius:9px;background:var(--soft);margin-bottom:4px;display:flex;flex-direction:column-reverse;overflow:hidden}
+.streak .b i{display:block;background:var(--done)}
+.tomah{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.tomah span.e{font-size:1.4rem}
+
+.rlist{display:grid;gap:8px;margin-top:8px}
+.rcard{display:grid;grid-template-columns:50px 1fr;gap:12px;align-items:center;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:10px 12px;width:100%}
+.rcard .badge{width:50px;height:50px;font-size:1.6rem}
+.rcard .n{font-weight:700;display:block}
+
+.shop-sec h3{margin:20px 0 4px;display:flex;gap:8px;align-items:center}
+.item{display:flex;align-items:center;gap:12px;padding:8px 0;border:0;border-bottom:1px solid var(--line);width:100%;background:none;text-align:left}
+.item .nm{flex:1}
+.item .qt{color:var(--muted);font-variant-numeric:tabular-nums;font-size:.9rem}
+.item[aria-pressed="true"] .nm{text-decoration:line-through;color:var(--muted)}
+.progress{height:10px;border-radius:99px;background:var(--soft);overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--done);transition:width .2s}
+.addrow{display:flex;gap:8px;margin-top:14px}
+.addrow .btn{flex:none}
+
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs nav{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr)}
+.tabs a{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;color:var(--muted);text-decoration:none;font-size:.64rem;font-weight:700;white-space:nowrap}
+.tabs a .ti{width:44px;height:28px;border-radius:999px;display:grid;place-items:center}
+.tabs a svg{width:22px;height:22px}
+.tabs a[aria-current="page"]{color:var(--ink)}
+.tabs a[aria-current="page"] .ti{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+
+.sheet-bg{position:fixed;inset:0;background:rgba(10,20,18,.45);z-index:40;display:none}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;max-height:90vh;overflow:auto;background:var(--bg);border-radius:26px 26px 0 0;padding:10px 20px calc(28px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .25s ease;max-width:600px;margin:0 auto}
+.sheet.open{transform:none}
+.sheet .grab{width:44px;height:5px;border-radius:9px;background:var(--line);margin:4px auto 10px}
+.sheet h2{font-size:1.55rem;line-height:1.12;margin:10px 0 6px}
+.sheet .bigb{width:84px;height:84px;border-radius:26px;font-size:2.8rem;display:grid;place-items:center;background:color-mix(in srgb,var(--cc,var(--salvia)) 22%,var(--surface))}
+.sheet ol{padding-left:1.3em} .sheet ol li{margin:8px 0}
+.sheet ul.ing{list-style:none;padding:0;margin:8px 0}
+.sheet ul.ing li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line)}
+.sheet ul.ing li span:last-child{color:var(--muted);text-align:right}
+.closebtn{float:right}
+.avoid h3{margin-top:16px;display:flex;gap:8px;align-items:center} .avoid p{color:var(--muted)}
+/* Deporte y peso */
+.sp-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.sp-chips .chip{padding:6px 11px}
+.sp-add{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.sp-add label{flex:0 0 100px;display:flex;flex-direction:column;gap:4px}
+input[type="number"],input[type="date"]{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:10px 12px;width:100%;min-width:0;font-size:1.05rem}
+.seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:9px 12px;font-size:.88rem}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.sp-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.sp-row .e{font-size:1.45rem}.sp-row .nm{flex:1}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.stat div{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:10px 6px;text-align:center;font-size:.8rem;color:var(--muted)}
+.stat b{display:block;font-family:var(--display);font-size:1.3rem;color:var(--ink)}
+.wchart{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:10px 6px 4px;margin:10px 0}
+.wchart .gl{stroke:var(--line);stroke-dasharray:3 4}
+.wchart text{fill:var(--muted);font-size:11px;font-family:var(--body)}
+.bars{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;align-items:end;height:140px;margin-top:10px}
+.bars .bc{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;font-size:.72rem;color:var(--muted)}
+.bars .bc i{width:100%;background:var(--mar);border-radius:8px 8px 3px 3px;min-height:3px}
+.bars .bc.cur i{background:var(--accent)}
+.bars .bc b{color:var(--ink);font-size:.75rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><rect width="96" height="96" rx="24" fill="#1F5C52"/><circle cx="76" cy="18" r="30" fill="#D99A1E" opacity=".22"/><circle cx="48" cy="50" r="31" fill="#F3F5EF"/><path d="M48 24 A26 26 0 0 0 48 76 Z" fill="#7E9C83"/><path d="M48 50 L48 24 A26 26 0 0 1 74 50 Z" fill="#D99A1E"/><path d="M48 50 L74 50 A26 26 0 0 1 48 76 Z" fill="#E2724A"/><path d="M48 24V76M48 50H74" stroke="#F3F5EF" stroke-width="2.5"/><path d="M62 15c9-2 15 2 17 8-8 3-15 1-17-8z" fill="#9CC5A0"/><path d="M63 16c5 2 9 4 15 7" stroke="#1F5C52" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>
+<span>Mi plan<small>Kineva, para Raquel</small></span></div>
+    <button class="ghost" id="avoidBtn" type="button"><span class="e">🚫</span> Qué evitar</button>
+  </header>
+  <main id="view" aria-live="polite"></main>
+</div>
+<div class="tabs"><nav aria-label="Secciones">
+  <a href="#hoy" data-tab="hoy"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17M12 12h8.5"/></svg></span>Mi día</a>
+  <a href="#calendario" data-tab="calendario"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span>Calendario</a>
+  <a href="#suplementos" data-tab="suplementos"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="8.5" width="18" height="7" rx="3.5" transform="rotate(-35 12 12)"/><path d="M9.2 8.1l5.6 7.8"/></svg></span>Suplementos</a>
+  <a href="#recetas" data-tab="recetas"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg></span>Recetas</a>
+  <a href="#compra" data-tab="compra"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5h2l2 10h10l2-7H7"/><circle cx="9.5" cy="19" r="1.3"/><circle cx="17" cy="19" r="1.3"/></svg></span>Compra</a>
+  <a href="#progreso" data-tab="progreso"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16"/><path d="M5 15l4-5 4 3 6-7"/><circle cx="19" cy="6" r="1.2"/></svg></span>Progreso</a>
+</nav></div>
+<div class="sheet-bg" id="sheetBg"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></div>
+<script>
+const AISLES = {
+  fru:"Fruta", ver:"Verdura y hortalizas", pes:"Pescadería", car:"Carne y huevos",
+  cer:"Cereales, legumbres y harinas", des:"Despensa y especias", her:"Herbolario e infusiones"
+};
+const CAT = {
+  b:"Desayuno", cf:"Comida con pescado", ch:"Comida con huevo", cc:"Comida con carne blanca", cl:"Comida con legumbre",
+  df:"Cena con pescado", dh:"Cena con huevo", dv:"Cena vegetal", fut:"Para más adelante"
+};
+const TAG = {cf:["Pescado","pes"],ch:["Huevo","hue"],cc:["Carne blanca","car"],cl:["Legumbre","leg"],df:["Pescado","pes"],dh:["Huevo","hue"],dv:["Vegetal","veg"],b:["Desayuno","veg"],fut:["Más adelante","leg"]};
+
+// [nombre, cantidad, unidad, pasillo]; cantidad 0 = al gusto (va a despensa)
+const AOVE=["Aceite de oliva virgen extra",0,"","des"], SAL=["Sal rosa del Himalaya",0,"","des"];
+const R = {
+ b1:{n:"Crepes de trigo sarraceno con revuelto de huevo",c:"b",t:"15 min (+ remojo la noche antes)",prev:"sarraceno",
+  ing:[["Trigo sarraceno en grano",50,"g","cer"],["Huevos ecológicos",1,"ud","car"],["Yogur de coco 100% natural",80,"g","des"],["Tahini",0,"","des"],AOVE,SAL],
+  st:["La noche anterior, pon el trigo sarraceno en remojo con agua.","Por la mañana, cuélalo y lávalo bien. Bátelo con un poco de agua y una pizca de sal rosa hasta tener una masa fluida (también vale harina de trigo sarraceno).","Sartén caliente con unas gotas de AOVE: vierte la masa fina, vuelta y vuelta.","Haz un revuelto con el huevo y rellena el crepe. Puedes untar un poco de tahini o AOVE.","Empieza por la fruta con unas cucharadas de yogur de coco, mientras tomas la infusión."],
+  nota:"La masa aguanta 2 días en la nevera: haz el doble y te ahorras un remojo."},
+ b2:{n:"Tostadas de trigo sarraceno con AOVE y pavo natural",c:"b",t:"5 min",
+  ing:[["Tortas de trigo sarraceno (tipo Le Pain des Fleurs)",2,"ud","des"],["Pavo natural >95% (sin aditivos)",40,"g","car"],["Yogur de coco 100% natural",80,"g","des"],AOVE],
+  st:["Toma primero la fruta con unas cucharadas de yogur de coco.","Riega las tortas con un hilo de AOVE y pon el pavo encima.","Acompaña con la infusión de salvia."],
+  nota:"El pavo es ocasional: una vez por semana como mucho. El resto de días mejor huevo."},
+ b3:{n:"Porridge de quinoa o arroz rojo con manzana y arándanos",c:"b",t:"25 min (sirve para 3 días)",
+  ing:[["Quinoa o arroz rojo",40,"g","cer"],["Manzana",0.5,"ud","fru"],["Arándanos",50,"g","fru"],["Bebida de arroz o de coco (sin azúcar)",200,"ml","des"],["Canela de Ceilán",0,"","des"],["Cúrcuma en polvo",0,"","des"],["Jengibre en polvo",0,"","des"],["Coco rallado",0,"","des"],["Semillas de calabaza",0,"","des"],["Proteína vegana (Iswari, plátano y vainilla)",0,"","her"]],
+  st:["Lava bien la quinoa o el arroz rojo y cuécelo. Si lo haces para 3 días, triplica la cantidad.","Añade la bebida vegetal, unos trocitos de manzana, canela, cúrcuma y jengibre, y dale un golpe de hervor. Si quieres, bátelo.","Guarda en la nevera en tarros de cristal, sin la fruta (se oxida).","Al servir, añade los arándanos, una cucharada de semillas de calabaza, coco rallado y la proteína vegana. Templa en un cazo, sin microondas."],
+  nota:"Es el desayuno ideal para dejar hecho el domingo."},
+
+ cf1:{n:"Merluza al horno con patata y judías verdes",c:"cf",t:"35 min",prev:"patata",plate:["Judías verdes y cebolla","Patata cocida y refrigerada","Merluza"],
+  ing:[["Merluza",150,"g","pes"],["Patata",1,"ud","ver"],["Judías verdes",150,"g","ver"],["Cebolla",0.5,"ud","ver"],["Limón",0.5,"ud","ver"],["Tomillo",0,"","des"],AOVE],
+  st:["La víspera cuece la patata, pélala y guárdala 24 h en la nevera: así crea almidón resistente, que alimenta tu microbiota.","Horno a 190 °C. Coloca la cebolla en juliana y la patata en rodajas en una fuente con un chorrito de AOVE y tomillo. Hornea 15 min.","Pon la merluza encima con unas gotas de limón y hornea 12–15 min más.","Cuece las judías al vapor 8–10 min y alíñalas con AOVE."]},
+ cf2:{n:"Bacalao fresco con quinoa y brócoli al vapor",c:"cf",t:"25 min",plate:["Brócoli al vapor","Quinoa","Bacalao fresco"],
+  ing:[["Bacalao fresco",150,"g","pes"],["Quinoa",60,"g","cer"],["Brócoli",200,"g","ver"],["Ajo",1,"diente","ver"],["Cúrcuma en polvo",0,"","des"],AOVE],
+  st:["Lava bien la quinoa y cuécela 15 min en el doble de agua.","Cuece el brócoli al vapor 6–7 min, que quede firme.","Haz el bacalao a la plancha o al vapor, con un ajo laminado y una pizca de cúrcuma.","Sirve con un chorrito de AOVE en crudo."]},
+ cf3:{n:"Sepia a la plancha con arroz integral y borraja",c:"cf",t:"40 min",plate:["Borraja con ajo","Arroz integral","Sepia"],
+  ing:[["Sepia limpia",180,"g","pes"],["Arroz integral",60,"g","cer"],["Borraja",250,"g","ver"],["Ajo",1,"diente","ver"],["Perejil fresco",0,"","ver"],AOVE],
+  st:["Lava el arroz y cuécelo unos 35 min (puedes tenerlo cocido de otro día).","Cuece la borraja 10 min, escúrrela y saltéala con el ajo y un poco de AOVE.","Haz la sepia a la plancha muy caliente, 2–3 min por lado, y termina con perejil."]},
+ cf4:{n:"Dorada al papillote con hinojo, calabacín y boniato",c:"cf",t:"30 min",prev:"boniato",plate:["Hinojo y calabacín","Boniato","Dorada"],
+  ing:[["Dorada en lomos",160,"g","pes"],["Hinojo",0.5,"ud","ver"],["Calabacín",1,"ud","ver"],["Boniato",1,"ud","ver"],["Limón",0.5,"ud","ver"],["Romero",0,"","des"],AOVE],
+  st:["Cuece el boniato el día antes y guárdalo en la nevera.","Corta el hinojo y el calabacín en láminas finas y ponlos sobre papel de horno.","Encima, la dorada con limón, romero y un hilo de AOVE. Cierra el paquete.","Horno a 200 °C durante 15–18 min. Calienta el boniato en el horno a la vez."]},
+ cf5:{n:"Rape con arroz rojo y alcachofas",c:"cf",t:"40 min",plate:["Alcachofas y cebolla","Arroz rojo","Rape"],
+  ing:[["Rape",150,"g","pes"],["Arroz rojo",60,"g","cer"],["Alcachofas",3,"ud","ver"],["Cebolla",0.5,"ud","ver"],["Ajo",1,"diente","ver"],AOVE],
+  st:["Lava el arroz rojo y cuécelo unos 35 min.","Limpia las alcachofas, córtalas en cuartos y saltéalas con cebolla y ajo a fuego medio.","Añade el rape en dados a la sartén los últimos 6–8 min, con un poco de agua si hace falta.","Sirve junto al arroz."]},
+
+ ch1:{n:"Tortilla de calabacín con patata y canónigos",c:"ch",t:"25 min",prev:"patata",plate:["Calabacín, canónigos y rábanos","Patata cocida y refrigerada","Tortilla de 2 huevos"],
+  ing:[["Huevos ecológicos",2,"ud","car"],["Calabacín",1,"ud","ver"],["Cebolla",0.5,"ud","ver"],["Patata",1,"ud","ver"],["Canónigos",50,"g","ver"],["Rábanos",4,"ud","ver"],AOVE],
+  st:["Cuece la patata la víspera y refrigérala 24 h.","Pocha el calabacín y la cebolla a fuego suave con poco AOVE.","Bate los huevos, mezcla y cuaja la tortilla.","Acompaña con la patata en rodajas, los canónigos y los rábanos laminados."]},
+ ch2:{n:"Huevos cocidos con quinoa, espárragos y zanahoria",c:"ch",t:"20 min",plate:["Espárragos, zanahoria y rúcula","Quinoa","2 huevos cocidos"],
+  ing:[["Huevos ecológicos",2,"ud","car"],["Quinoa",60,"g","cer"],["Espárragos trigueros",0.5,"manojo","ver"],["Zanahoria",1,"ud","ver"],["Rúcula",40,"g","ver"],AOVE],
+  st:["Lava y cuece la quinoa 15 min.","Cuece los huevos 10 min.","Haz los espárragos a la plancha y ralla la zanahoria.","Monta el plato con la rúcula y aliña con AOVE y especias."]},
+ ch3:{n:"Revuelto de setas y espinacas con boniato asado",c:"ch",t:"30 min",prev:"boniato",plate:["Espinacas y champiñones","Boniato","Revuelto de 2 huevos"],
+  ing:[["Huevos ecológicos",2,"ud","car"],["Champiñones",150,"g","ver"],["Espinacas frescas",150,"g","ver"],["Boniato",1,"ud","ver"],["Ajo",1,"diente","ver"],AOVE],
+  st:["Usa boniato cocido el día anterior y dóralo en el horno o en la sartén.","Saltea el ajo, los champiñones y las espinacas.","Añade los huevos batidos y remueve a fuego bajo hasta que cuajen."]},
+
+ cc1:{n:"Pollo al horno con boniato, cebolla y romero",c:"cc",t:"45 min",prev:"boniato",plate:["Cebolla asada y espinacas","Boniato","Pollo ecológico"],
+  ing:[["Pollo ecológico (contramuslo o pechuga)",180,"g","car"],["Boniato",1,"ud","ver"],["Cebolla",1,"ud","ver"],["Espinacas frescas",150,"g","ver"],["Romero",0,"","des"],AOVE],
+  st:["Cuece el boniato la víspera y refrigéralo.","Horno a 200 °C. Pollo, cebolla en gajos y boniato en dados con romero y AOVE, unos 30 min.","Saltea las espinacas un minuto y sirve al lado."]},
+ cc2:{n:"Pavo con cúrcuma y coco, arroz rojo y coliflor",c:"cc",t:"40 min",plate:["Coliflor","Arroz rojo","Pavo"],
+  ing:[["Pechuga de pavo",150,"g","car"],["Arroz rojo",60,"g","cer"],["Coliflor",250,"g","ver"],["Cebolla",0.5,"ud","ver"],["Jengibre fresco",0,"","ver"],["Bebida de arroz o de coco (sin azúcar)",100,"ml","des"],["Cúrcuma en polvo",0,"","des"],AOVE],
+  st:["Lava y cuece el arroz rojo unos 35 min.","Pocha la cebolla con jengibre rallado, añade el pavo en tiras y dóralo.","Añade la cúrcuma y la bebida de coco; deja reducir 5 min.","Cuece la coliflor al vapor y sirve todo junto."]},
+ cc3:{n:"Conejo guisado con tomillo, patata y judías",c:"cc",t:"50 min",plate:["Judías verdes y zanahoria","Patata","Conejo"],
+  ing:[["Conejo troceado",250,"g","car"],["Patata",1,"ud","ver"],["Judías verdes",150,"g","ver"],["Zanahoria",1,"ud","ver"],["Cebolla",0.5,"ud","ver"],["Ajo",2,"diente","ver"],["Tomillo",0,"","des"],AOVE],
+  st:["Dora el conejo con los ajos en una cazuela con poco AOVE.","Añade cebolla y zanahoria, luego agua hasta casi cubrir y el tomillo. Cuece 30 min a fuego suave.","Añade la patata en trozos los últimos 15 min.","Cuece las judías al vapor y sírvelas al lado."]},
+ cc4:{n:"Pollo salteado con quinoa, calabacín y cardo",c:"cc",t:"25 min",plate:["Calabacín y cardo","Quinoa","Pollo ecológico"],
+  ing:[["Pollo ecológico (contramuslo o pechuga)",150,"g","car"],["Quinoa",60,"g","cer"],["Calabacín",1,"ud","ver"],["Cardo (fresco o en bote de cristal)",200,"g","ver"],["Ajo",1,"diente","ver"],AOVE],
+  st:["Lava y cuece la quinoa 15 min.","Saltea el pollo en tiras con ajo.","Añade el calabacín en medias lunas y el cardo escurrido; 5 min más.","Mezcla con la quinoa y termina con especias."]},
+
+ cl1:{n:"Lenteja roja con arroz rojo, calabaza y comino",c:"cl",t:"35 min",plate:["Calabaza, zanahoria y cebolla","Arroz rojo","Lenteja roja"],
+  ing:[["Lenteja roja",70,"g","cer"],["Arroz rojo",40,"g","cer"],["Calabaza",200,"g","ver"],["Zanahoria",1,"ud","ver"],["Cebolla",0.5,"ud","ver"],["Alga kombu",0,"","des"],["Comino",0,"","des"],AOVE],
+  st:["Cuece el arroz rojo aparte (o usa uno ya cocido).","Sofríe la cebolla y la zanahoria, añade la calabaza en dados y el comino.","Añade la lenteja roja lavada, una tira de kombu y agua hasta cubrir. Cuece 15–20 min.","Mezcla con el arroz. Es plato único: no hace falta nada más."],
+  nota:"El comino y la kombu ayudan a que la legumbre dé menos gases."},
+ cl2:{n:"Guiso de lenteja roja con boniato y espinacas",c:"cl",t:"30 min",plate:["Puerro y espinacas","Boniato","Lenteja roja"],
+  ing:[["Lenteja roja",80,"g","cer"],["Boniato",0.5,"ud","ver"],["Espinacas frescas",100,"g","ver"],["Puerro",1,"ud","ver"],["Alga kombu",0,"","des"],["Cúrcuma en polvo",0,"","des"],["Comino",0,"","des"],AOVE],
+  st:["Pocha el puerro con un poco de AOVE.","Añade el boniato en dados, la lenteja lavada, cúrcuma, comino, una tira de kombu y agua.","Cuece 20 min. Al final incorpora las espinacas y deja 2 min."]},
+ cl3:{n:"Pasta de lenteja roja con verduras salteadas",c:"cl",t:"20 min",plate:["Calabacín, champiñones y espinacas","Pasta de lenteja roja","Plato único"],
+  ing:[["Pasta de lenteja roja",80,"g","cer"],["Calabacín",1,"ud","ver"],["Champiñones",100,"g","ver"],["Espinacas frescas",80,"g","ver"],["Ajo",1,"diente","ver"],AOVE],
+  st:["Cuece la pasta según el paquete (suele ser poco tiempo; no la pases).","Saltea el ajo, el calabacín y los champiñones; al final, las espinacas.","Mezcla con la pasta y un chorrito de AOVE en crudo."]},
+
+ df1:{n:"Merluza al vapor con crema de calabacín y puerro",c:"df",t:"25 min",
+  ing:[["Merluza",150,"g","pes"],["Calabacín",1,"ud","ver"],["Puerro",1,"ud","ver"],AOVE],
+  st:["Pocha el puerro, añade el calabacín y agua justa. Cuece 12 min y tritura con un hilo de AOVE.","Haz la merluza al vapor 6–8 min y sírvela con la crema."]},
+ df2:{n:"Mejillones al vapor con menestra de verduras",c:"df",t:"25 min",
+  ing:[["Mejillones",500,"g","pes"],["Judías verdes",100,"g","ver"],["Zanahoria",1,"ud","ver"],["Alcachofas",2,"ud","ver"],["Limón",0.5,"ud","ver"],AOVE],
+  st:["Cuece la menestra (judías, zanahoria y alcachofa) al vapor 10–12 min.","Abre los mejillones en una cazuela tapada con un dedo de agua y limón, 4–5 min.","Sirve la menestra con un hilo de AOVE y los mejillones al lado."]},
+ df3:{n:"Lenguado a la plancha con puré de coliflor y cardo",c:"df",t:"25 min",
+  ing:[["Lenguado (o gallo)",150,"g","pes"],["Coliflor",250,"g","ver"],["Cardo (fresco o en bote de cristal)",150,"g","ver"],AOVE],
+  st:["Cuece la coliflor 12 min y tritúrala con un poco del agua y AOVE.","Saltea el cardo escurrido.","Haz el pescado a la plancha 2 min por lado."]},
+ df4:{n:"Chipirones a la plancha con judías y zanahoria",c:"df",t:"20 min",
+  ing:[["Chipirones limpios",180,"g","pes"],["Judías verdes",150,"g","ver"],["Zanahoria",1,"ud","ver"],["Ajo",1,"diente","ver"],["Perejil fresco",0,"","ver"],AOVE],
+  st:["Cuece las judías y la zanahoria al vapor 8 min y saltéalas con ajo.","Haz los chipirones a la plancha bien caliente, 2–3 min, con perejil."]},
+ df5:{n:"Atún fresco con brócoli y cebolla pochada",c:"df",t:"20 min",
+  ing:[["Atún fresco",130,"g","pes"],["Brócoli",200,"g","ver"],["Cebolla",0.5,"ud","ver"],AOVE],
+  st:["Pocha la cebolla a fuego suave 10 min.","Cuece el brócoli al vapor 6 min.","Marca el atún a la plancha 1 min por lado."],
+  nota:"El atún, como mucho una vez a la semana."},
+
+ dh1:{n:"Revuelto de champiñones y trigueros con crema de puerro",c:"dh",t:"25 min",
+  ing:[["Huevos ecológicos",2,"ud","car"],["Champiñones",120,"g","ver"],["Espárragos trigueros",0.5,"manojo","ver"],["Puerro",1,"ud","ver"],["Calabacín",0.5,"ud","ver"],AOVE],
+  st:["Haz una crema con el puerro y el calabacín: pocha, cubre de agua, cuece 12 min y tritura.","Saltea champiñones y trigueros, añade los huevos y cuaja a fuego bajo."]},
+ dh2:{n:"Tortilla de espinacas con sopa de miso",c:"dh",t:"20 min",
+  ing:[["Huevos ecológicos",2,"ud","car"],["Espinacas frescas",100,"g","ver"],["Zanahoria",1,"ud","ver"],["Puerro",0.5,"ud","ver"],["Miso",0,"","des"],AOVE],
+  st:["Cuece la zanahoria y el puerro en 400 ml de agua 10 min. Fuera del fuego, disuelve 1 cucharada de miso (no lo hiervas).","Saltea las espinacas, añade los huevos batidos y haz una tortilla francesa."]},
+ dh3:{n:"Huevos de codorniz con menestra templada",c:"dh",t:"20 min",
+  ing:[["Huevos de codorniz",9,"ud","car"],["Judías verdes",100,"g","ver"],["Alcachofas",2,"ud","ver"],["Zanahoria",1,"ud","ver"],AOVE],
+  st:["Cuece la menestra al vapor 10–12 min.","Cuece los huevos de codorniz 3 min, enfríalos y pélalos.","Sirve templado con AOVE y especias."],
+  nota:"De 4 a 5 huevos de codorniz equivalen a 1 de gallina, y se digieren mejor."},
+
+ dv1:{n:"Sopa de miso con verduras y fideos de arroz",c:"dv",t:"20 min",
+  ing:[["Fideos de arroz (sin gluten)",40,"g","cer"],["Zanahoria",1,"ud","ver"],["Puerro",0.5,"ud","ver"],["Champiñones",80,"g","ver"],["Espinacas frescas",50,"g","ver"],["Jengibre fresco",0,"","ver"],["Miso",0,"","des"]],
+  st:["Cuece la zanahoria, el puerro, los champiñones y un poco de jengibre en 500 ml de agua, 10 min.","Añade los fideos y las espinacas; 3–4 min.","Fuera del fuego, disuelve 1 cucharada de miso."]},
+ dv2:{n:"Crepes de sarraceno con verduritas",c:"dv",t:"25 min",
+  ing:[["Harina de trigo sarraceno",60,"g","cer"],["Calabacín",0.5,"ud","ver"],["Champiñones",100,"g","ver"],["Cebolla",0.5,"ud","ver"],["Espinacas frescas",60,"g","ver"],SAL,AOVE],
+  st:["Bate la harina con agua y una pizca de sal hasta tener una masa fluida.","Haz los crepes en la sartén, vuelta y vuelta.","Saltea las verduras y rellena."]},
+ dv3:{n:"Hummus casero con crudités y crema de calabaza",c:"dv",t:"25 min",leg:true,
+  ing:[["Garbanzos cocidos (bote de cristal)",120,"g","cer"],["Zanahoria",2,"ud","ver"],["Rábanos",6,"ud","ver"],["Calabaza",250,"g","ver"],["Cebolla",0.5,"ud","ver"],["Limón",0.5,"ud","ver"],["Comino",0,"","des"],AOVE],
+  st:["Para la crema: pocha la cebolla, añade la calabaza y agua justa, cuece 15 min y tritura.","Para el hummus: tritura los garbanzos lavados con limón, comino, AOVE y un poco de agua.","Acompaña con zanahoria y rábanos en bastones."],
+  nota:"Lo hacemos sin tahini. Si los garbanzos te dan gases, cámbialo por otra cena vegetal."},
+ dv4:{n:"Pasta de lenteja roja con calabacín y cúrcuma",c:"dv",t:"15 min",leg:true,
+  ing:[["Pasta de lenteja roja",70,"g","cer"],["Calabacín",1,"ud","ver"],["Cebolla",0.5,"ud","ver"],["Cúrcuma en polvo",0,"","des"],AOVE],
+  st:["Cuece la pasta.","Pocha la cebolla y el calabacín con cúrcuma.","Mezcla y termina con AOVE en crudo."]},
+ dv5:{n:"Crema de calabaza y zanahoria con jengibre",c:"dv",t:"25 min",
+  ing:[["Calabaza",300,"g","ver"],["Zanahoria",2,"ud","ver"],["Cebolla",0.5,"ud","ver"],["Jengibre fresco",0,"","ver"],["Tortas de trigo sarraceno (tipo Le Pain des Fleurs)",2,"ud","des"],AOVE],
+  st:["Pocha la cebolla con jengibre rallado.","Añade calabaza y zanahoria, cubre de agua y cuece 15 min.","Tritura con un hilo de AOVE. Acompaña con las tortas."]},
+
+ fut1:{n:"Verdinas con verduras y kombu",c:"fut",t:"50 min",
+  ing:[["Verdinas",70,"g","cer"],["Puerro",1,"ud","ver"],["Zanahoria",1,"ud","ver"],["Alga kombu",0,"","des"],AOVE],
+  st:["Deja las verdinas en remojo la noche anterior.","Cuécelas con el puerro, la zanahoria y una tira de kombu, 40 min a fuego suave."],
+  nota:"Solo cuando la lenteja roja te siente bien. Pruébalo y apunta cómo te sienta."},
+ fut2:{n:"Garbanzos con espinacas y comino",c:"fut",t:"20 min",
+  ing:[["Garbanzos cocidos (bote de cristal)",150,"g","cer"],["Espinacas frescas",150,"g","ver"],["Ajo",1,"diente","ver"],["Comino",0,"","des"],AOVE],
+  st:["Lava bien los garbanzos.","Saltea el ajo y las espinacas, añade los garbanzos y el comino y calienta 5 min."],
+  nota:"Para cuando toleres bien otras legumbres."}
+};
+
+const FRUIT = { // raciones por pieza o envase para la lista
+  "Piña":{u:"ud",per:5}, "Papaya":{u:"ud",per:3}, "Mango":{u:"ud",per:2}, "Plátano":{u:"ud",per:1},
+  "Pera":{u:"ud",per:1}, "Manzana":{u:"ud",per:1}, "Arándanos":{u:"g",g:80}, "Frutos rojos (sin fresas, valen congelados)":{u:"g",g:80},
+  "Compota de manzana casera":{as:"Manzana"}
+};
+const FRUIT_BF=["Papaya","Arándanos","Mango","Manzana","Frutos rojos (sin fresas, valen congelados)","Pera"];
+const FRUIT_MER=["Plátano","Pera","Compota de manzana casera","Mango","Manzana","Arándanos"];
+const INF_BF=["Infusión de salvia","Manzanilla con caléndula, jengibre y cúrcuma","Té verde con jengibre y unas gotas de limón"];
+
+const SUP = [
+  {id:"protect",n:"Ergyprotect Confort",d:"L-glutamina, cúrcuma… (Nutergia)",p:[2,0,1]},
+  {id:"taurina",n:"Ergytaurina Detox",d:"Nutergia",p:[2,0,0]},
+  {id:"lase",n:"Ergylase Plus",d:"Enzimas digestivas (Nutergia). Tómalo justo antes de comer.",p:[0,1,1]},
+  {id:"d3",n:"Vitamina D3 & K2 2000 UI",d:"Scientiffic Nutrition",p:[1,0,0]},
+  {id:"syn",n:"Synerviol",d:"Omega 3 y 6 (Nutergia)",p:[1,1,1]}
+];
+const TOMAS=[{k:"des",n:"Desayuno"},{k:"com",n:"Comida"},{k:"cen",n:"Cena"}];
+
+const STAPLES=[
+  ["Aceite de coco (para el enjuague)","des"],["Limones extra (para el agua antes de comer)","ver"],["Infusión de salvia","her"],["Manzanilla con caléndula","her"],
+  ["Té verde","her"],["Yogi Tea Digestive o romero","her"],["Jengibre fresco","ver"],["Ajo","ver"]
+];
+
+/* ---------- Utilidades de fecha ---------- */
+const DOW=["lunes","martes","miércoles","jueves","viernes","sábado","domingo"];
+const MES=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const pad=n=>String(n).padStart(2,"0");
+const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const addDays=(d,n)=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);return x};
+const mondayOf=d=>addDays(d,-((d.getDay()+6)%7));
+const dowIdx=d=>(d.getDay()+6)%7;
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const longDate=d=>`${cap(DOW[dowIdx(d)])} ${d.getDate()} de ${MES[d.getMonth()]}`;
+function weekLabel(mon){const sun=addDays(mon,6);
+  return mon.getMonth()===sun.getMonth()?`Semana del ${mon.getDate()} al ${sun.getDate()} de ${MES[sun.getMonth()]}`:`Semana del ${mon.getDate()} de ${MES[mon.getMonth()]} al ${sun.getDate()} de ${MES[sun.getMonth()]}`}
+const weekNum=mon=>Math.round(Date.UTC(mon.getFullYear(),mon.getMonth(),mon.getDate())/864e5/7);
+
+/* ---------- Generador semanal ---------- */
+function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function shuffle(arr,r){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const pool=c=>Object.keys(R).filter(k=>R[k].c===c);
+const planCache={};
+function planFor(mon){
+  const key=ymd(mon); if(planCache[key]) return planCache[key];
+  const r=rng(weekNum(mon)*7919+13);
+  let L,D;
+  for(let tries=0;tries<500;tries++){
+    L=shuffle(["cf","cf","ch","cc","cc","cl","cl"],r);
+    D=shuffle(["df","df","dh","dh","dv","dv","dv"],r);
+    let ok=true;
+    for(let i=0;i<7;i++){
+      if(L[i]==="ch"&&D[i]==="dh") ok=false;           // no huevo en comida y cena el mismo día
+      if(L[i]==="cl"&&L[(i+1)%7]==="cl"&&i<6) ok=false; // legumbre no en días seguidos
+      if(L[i]==="cf"&&D[i]==="df") ok=false;           // repartir el pescado
+    }
+    if(ok) break;
+  }
+  // Rotación entre semanas: cada semana avanza en la lista de recetas de cada tipo
+  const w=weekNum(mon); const base=rng(424242);
+  const order={}; Object.keys(CAT).forEach(c=>order[c]=shuffle(pool(c),base));
+  const take=(c,k)=>{const o=order[c];return Array.from({length:k},(_,j)=>o[(w*k+j)%o.length])};
+  const want=(arr,c)=>arr.filter(x=>x===c).length;
+  const lp={},dp={}; ["cf","ch","cc","cl"].forEach(c=>lp[c]=take(c,want(L,c))); ["df","dh","dv"].forEach(c=>dp[c]=take(c,want(D,c)));
+  // las cenas vegetales con legumbre no caen el día de legumbre en la comida
+  dp.dv.sort((x,y)=>(R[x].leg?1:0)-(R[y].leg?1:0));
+  const dvDays=[...Array(7).keys()].filter(i=>D[i]==="dv").sort((x,y)=>(L[y]==="cl"?1:0)-(L[x]==="cl"?1:0));
+  const dvMap={}; dvDays.forEach((d,j)=>dvMap[d]=dp.dv[j]);
+  const next=(c,i)=>c==="dv"?dvMap[i]:(c[0]==="c"?lp[c]:dp[c]).shift();
+  const B=shuffle(["b1","b1","b1","b2","b3","b3","b3"],r);
+  const days=[];
+  for(let i=0;i<7;i++){
+    const l=next(L[i],i); const d=next(D[i],i);
+    const b=B[i];
+    const bfFruit=b==="b3"?null:FRUIT_BF[Math.floor(r()*FRUIT_BF.length)];
+    const mm=(i%2===0)?"Piña":"Papaya";
+    const mer=FRUIT_MER[Math.floor(r()*FRUIT_MER.length)];
+    days.push({b,l,d,bfFruit,mm,mer,inf:INF_BF[(i+weekNum(mon))%3],inf2:i%2?"Infusión de romero":"Yogi Tea Digestive"});
+  }
+  return planCache[key]=days;
+}
+
+/* ---------- Estado y guardado ---------- */
+const LS="kineva-plan-raquel-v1";
+let S=(()=>{try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return {}}})();
+function norm(s){s=s||{};s.checks=s.checks||{};s.shop=s.shop||{};s.custom=s.custom||{};s.times=s.times||{des:"09:00",com:"14:00",cen:"19:30"};s.weights=s.weights||{};s.sport=s.sport||{};s.updatedAt=s.updatedAt||0;return s}
+S=norm(S);
+let remoteRef=null,saveTimer=null;
+function prune(){const lim=ymd(addDays(new Date(),-75));for(const k in S.checks) if(k<lim) delete S.checks[k];
+  const wl=ymd(addDays(mondayOf(new Date()),-28));for(const k in S.shop) if(k<wl) delete S.shop[k];for(const k in S.custom) if(k<wl) delete S.custom[k]}
+function save(){S.updatedAt=Date.now();prune();try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}
+  if(remoteRef){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{remoteRef.set(JSON.parse(JSON.stringify(S))).catch(()=>{})},900)}}
+(async()=>{try{
+  if(!window.claude||!window.claude.use) return;
+  const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);
+  if(!db||!user) return;
+  const id=await user.id(); if(!id) return;
+  const ref=db.doc(`data/users/${id}/state`);
+  const snap=await Promise.race([ref.get(),new Promise((_,rej)=>setTimeout(()=>rej("t"),10000))]);
+  remoteRef=ref;
+  if(snap.exists){const rd=norm(snap.data());
+    if((rd.updatedAt||0)>(S.updatedAt||0)){S=rd;try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){};render()}
+    else if(S.updatedAt) save();
+  } else if(S.updatedAt) save();
+}catch(e){}})();
+const dayChecks=k=>S.checks[k]||(S.checks[k]={});
+
+/* ---------- Periodo del plan: 8 semanas desde el lunes 16 de noviembre ---------- */
+const START=new Date(2026,10,16), WEEKS=8, END=addDays(START,WEEKS*7-1);
+const inRange=d=>d>=START&&d<=END;
+const weekIdxOf=d=>Math.floor((d-START)/864e5/7);
+const clampDate=d=>d<START?START:d>END?END:d;
+const FEST={"2026-12-08":"Inmaculada","2026-12-24":"Nochebuena","2026-12-25":"Navidad","2026-12-31":"Nochevieja","2027-01-01":"Año Nuevo","2027-01-06":"Reyes"};
+
+/* ---------- Iconos y colores ---------- */
+const CC={cf:"var(--mar)",df:"var(--mar)",ch:"var(--curcuma)",dh:"var(--curcuma)",cc:"var(--papaya)",cl:"var(--lenteja)",dv:"var(--salvia)",b:"var(--trigo)",fut:"var(--lenteja)"};
+const EM={b1:"🥞",b2:"🍞",b3:"🥣",cf1:"🐟",cf2:"🐟",cf3:"🦑",cf4:"🐠",cf5:"🐟",ch1:"🍳",ch2:"🥚",ch3:"🍳",cc1:"🍗",cc2:"🍛",cc3:"🍲",cc4:"🥘",cl1:"🍲",cl2:"🥘",cl3:"🍝",df1:"🐟",df2:"🦪",df3:"🐟",df4:"🦑",df5:"🐟",dh1:"🍳",dh2:"🥚",dh3:"🥚",dv1:"🍜",dv2:"🌯",dv3:"🥕",dv4:"🍝",dv5:"🎃",fut1:"🫘",fut2:"🫘"};
+const PAPAYA='<svg viewBox="0 0 32 32" width="1.15em" height="1.15em" style="vertical-align:-0.2em" aria-hidden="true"><ellipse cx="16" cy="16" rx="11" ry="14" fill="#F2A33A"/><ellipse cx="16" cy="16" rx="8" ry="11" fill="#F07A4A"/><ellipse cx="16" cy="17" rx="3.4" ry="6" fill="#4A2E2A"/><circle cx="15" cy="14" r="1" fill="#2a1a18"/><circle cx="17" cy="18" r="1" fill="#2a1a18"/></svg>';
+const FE={"Piña":"🍍","Papaya":PAPAYA,"Mango":"🥭","Plátano":"🍌","Pera":"🍐","Manzana":"🍏","Arándanos":"🫐","Frutos rojos (sin fresas, valen congelados)":"🍒","Compota de manzana casera":"🍎"};
+const fe=f=>FE[f]&&FE[f].startsWith("<")?FE[f]:`<span class="e">${FE[f]||"🍎"}</span>`;
+const fchip=f=>`<span class="fchip">${fe(f)}${esc(f)}</span>`;
+const AE={fru:"🍎",ver:"🥦",pes:"🐟",car:"🥚",cer:"🌾",des:"🫙",her:"🌿"};
+
+/* ---------- Estado de vista ---------- */
+const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())};
+let selDate=clampDate(today());
+let weekSel=Math.max(0,Math.min(WEEKS-1,weekIdxOf(clampDate(today()))));
+let recFilter="todas",recQuery="";
+const CHECK='<svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const view=document.getElementById("view");
+const tagHtml=id=>{const t=TAG[R[id].c];return `<span class="tag" style="--cc:${CC[R[id].c]}">${t[0]}</span>`};
+const badge=(id,cls="badge")=>`<span class="${cls}" style="--cc:${CC[R[id].c]}"><span class="e">${EM[id]||"🍽️"}</span></span>`;
+const toMin=t=>{const [h,m]=t.split(":").map(Number);return h*60+m};
+const dayPlan=d=>planFor(mondayOf(d))[dowIdx(d)];
+const shortDate=d=>`${d.getDate()} ${MES[d.getMonth()].slice(0,3)}`;
+
+/* progreso de un día */
+const DAY_KEYS=["ritual","m-des","m-mm","m-com","m-cen"].concat(...TOMAS.map((t,ti)=>SUP.filter(s=>s.p[ti]>0).map(s=>`s-${t.k}-${s.id}`)));
+const dayProgress=dk=>{const c=S.checks[dk]||{};return DAY_KEYS.filter(k=>c[k]).length/DAY_KEYS.length};
+function ringSvg(p){const r=32,C=2*Math.PI*r;return `<svg class="ring" viewBox="0 0 78 78" aria-hidden="true"><circle cx="39" cy="39" r="${r}" fill="none" stroke="currentColor" stroke-opacity=".2" stroke-width="8"/><circle cx="39" cy="39" r="${r}" fill="none" stroke="var(--curcuma)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-p)}" transform="rotate(-90 39 39)"/></svg>`}
+
+/* ---------- Mi día ---------- */
+function supPills(dk,toma){
+  const c=dayChecks(dk); const ti=TOMAS.findIndex(t=>t.k===toma);
+  return `<div class="pills">${SUP.filter(s=>s.p[ti]>0).map(s=>{const k=`s-${toma}-${s.id}`;
+    return `<button type="button" class="pill" data-ck="${k}" aria-pressed="${!!c[k]}"><span class="dot"><span class="pe e">💊</span>${CHECK}</span><span><span class="q">${s.p[ti]}</span> ${esc(s.n)}</span></button>`}).join("")}</div>`;
+}
+const tick=(k,c)=>`<button type="button" class="tick" data-ck="${k}" aria-pressed="${!!c[k]}" aria-label="Marcar como hecho">${CHECK}</button>`;
+function plateSvg(isLeg){
+  const v="var(--salvia)",h="var(--curcuma)",pr=isLeg?"var(--lenteja)":"var(--papaya)";
+  const right=isLeg?`<path d="M60 12 A48 48 0 0 1 60 108 Z" fill="${pr}"/><path d="M60 60 L60 12 A48 48 0 0 1 108 60 Z" fill="${h}" opacity=".9"/>`
+    :`<path d="M60 60 L60 12 A48 48 0 0 1 108 60 Z" fill="${h}"/><path d="M60 60 L108 60 A48 48 0 0 1 60 108 Z" fill="${pr}"/>`;
+  return `<svg viewBox="0 0 120 120" role="img" aria-label="${isLeg?"Plato único: mitad verdura, mitad legumbre con cereal":"Medio plato de verdura, un cuarto de hidratos y un cuarto de proteína"}"><circle cx="60" cy="60" r="58" fill="var(--soft)"/><circle cx="60" cy="60" r="52" fill="var(--surface)"/><path d="M60 12 A48 48 0 0 0 60 108 Z" fill="${v}"/>${right}<path d="M60 12V108M60 60H108" stroke="var(--surface)" stroke-width="3"/></svg>`;
+}
+function nowBanner(dk){
+  if(dk!==ymd(today())) return "";
+  const n=new Date(),m=n.getHours()*60+n.getMinutes(),c=dayChecks(dk);
+  for(let ti=0;ti<3;ti++){const t=TOMAS[ti],tm=toMin(S.times[t.k]);
+    if(m>=tm-30&&m<=tm+90){const pend=SUP.filter(s=>s.p[ti]>0&&!c[`s-${t.k}-${s.id}`]);
+      if(pend.length) return `<div class="now"><span class="e" style="font-size:1.6rem">⏰</span><div><b>Toca la toma de ${t.n.toLowerCase()}</b><div class="small">${pend.map(s=>`${s.p[ti]} ${esc(s.n)}`).join(", ")}</div></div><button type="button" data-allsup="${t.k}">Hecho</button></div>`}}
+  return "";
+}
+function strip(){
+  const w=weekIdxOf(selDate), mon=addDays(START,w*7), tk=ymd(today());
+  return `<div class="strip"><button class="arrow" type="button" data-wk="-1" aria-label="Semana anterior" ${w===0?"disabled":""}>‹</button>
+  ${Array.from({length:7},(_,i)=>{const d=addDays(mon,i),dk=ymd(d),p=dayProgress(dk);
+    return `<button type="button" class="dpill${p>=1?" full":p>0?" part":""}${dk===tk?" is-today":""}" data-go="${dk}" ${dk===ymd(selDate)?'aria-current="date"':""} aria-label="${longDate(d)}"><span class="w">${"LMXJVSD"[i]}</span><span class="n">${d.getDate()}</span><span class="dt"></span></button>`}).join("")}
+  <button class="arrow" type="button" data-wk="1" aria-label="Semana siguiente" ${w===WEEKS-1?"disabled":""}>›</button></div>
+  <div class="weekcap">Semana ${w+1} de ${WEEKS}, ${weekLabel(mon).replace("Semana del ","del ")}</div>`;
+}
+function mealCard({key,cc,badgeHtml,k,tm,title,rec,extra,c}){
+  return `<section class="meal" style="--cc:${cc}"><div class="meal-h">${badgeHtml}
+    <div><div class="meal-k">${k}${tm?`<span class="tm">${tm}</span>`:""}</div>${rec?`<button type="button" class="meal-n" data-rec="${rec}">${esc(title)}</button>`:`<span class="meal-n">${esc(title)}</span>`}</div>
+    ${tick(key,c)}</div>${extra?`<div class="meal-b">${extra}</div>`:""}</section>`;
+}
+function renderHoy(){
+  const dk=ymd(selDate),day=dayPlan(selDate),c=dayChecks(dk),tdy=today(),isToday=dk===ymd(tdy);
+  const di=Math.round((selDate-START)/864e5)+1;
+  const tomorrow=addDays(selDate,1),tday=dayPlan(tomorrow);
+  const prep=[];
+  { if(R[tday.b].prev==="sarraceno") prep.push(["🫙","Pon el trigo sarraceno en remojo para los crepes del desayuno."]);
+    const pv=R[tday.l].prev; if(pv) prep.push(["🥔",`Cuece ${pv==="patata"?"la patata":"el boniato"} de mañana y guárdalo 24 h en la nevera.`]);
+    if(tday.b==="b3"&&day.b!=="b3") prep.push(["🥣","Si no te queda porridge, prepáralo para los próximos días."]); }
+  const L=R[day.l],isLeg=L.c==="cl",water=c.w||0,fest=FEST[dk];
+  const before=tdy<START?Math.round((START-tdy)/864e5):0;
+  view.innerHTML=`
+  ${before?`<div class="card sun"><b><span class="e">🌱</span> Tu plan empieza el lunes 16 de noviembre</b><p class="small">Quedan ${before} ${before>1?"días":"día"}. Mientras, ve haciendo la compra de la primera semana y sigue con los suplementos.</p></div>`:""}
+  <div class="hero"><div style="position:relative;z-index:1"><h1>${longDate(selDate)}</h1>
+    <div class="sub">Día ${di} de ${WEEKS*7}${isToday?", hoy":""}${!isToday&&inRange(tdy)?` <button type="button" class="todaylink" data-today>Ir a hoy</button>`:""}</div></div>
+    <div style="position:relative;z-index:1">${ringSvg(dayProgress(dk))}<b style="position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display)">${Math.round(dayProgress(dk)*100)}%</b></div></div>
+  ${strip()}
+  ${nowBanner(dk)}
+  ${fest?`<div class="card fest"><b><span class="e">🎄</span> ${fest}</b><p class="small">Si comes fuera, elige pescado o carne blanca a la plancha con verdura, sin pan ni postre, y agua o infusión. Turrones, roscón y alcohol, mejor no en esta fase. Disfruta sin agobios: mañana sigues.</p></div>`:""}
+  ${mealCard({key:"ritual",cc:"var(--salvia)",badgeHtml:`<span class="badge" style="--cc:var(--salvia)"><span class="e">🥥</span></span>`,k:"Al levantarte",title:"Enjuague con aceite de coco",c,
+     extra:`<p class="small">Una cucharada, y escúpelo en la papelera o en un papel, nunca en el desagüe.</p><span class="fchip"><span class="e">🍵</span>${esc(day.inf)}</span>`})}
+  ${mealCard({key:"m-des",cc:CC.b,badgeHtml:badge(day.b),k:"Desayuno",tm:S.times.des,title:R[day.b].n,rec:day.b,c,
+     extra:`${day.bfFruit?`<div>Empieza por la fruta, con yogur de coco:</div>${fchip(day.bfFruit)}`:`<p class="note">${esc(R[day.b].t)}</p>`}${supPills(dk,"des")}`})}
+  ${mealCard({key:"m-mm",cc:"var(--curcuma)",badgeHtml:`<span class="badge" style="--cc:var(--curcuma)">${fe(day.mm)}</span>`,k:"Media mañana",title:`Un trozo de ${day.mm.toLowerCase()}`,c,
+     extra:`<p class="note">Activa las enzimas digestivas antes de comer.</p>`})}
+  ${mealCard({key:"m-com",cc:CC[L.c],badgeHtml:badge(day.l),k:`Comida ${tagHtml(day.l)}`,tm:S.times.com,title:L.n,rec:day.l,c,
+     extra:`<p class="note"><span class="e">🍋</span> Antes, un vaso de agua con 2 gotas de limón y el Ergylase.</p>
+       <div class="plate-wrap"><button type="button" class="platebtn" data-rec="${day.l}" aria-label="Ver receta">${plateSvg(isLeg)}</button>
+       <div class="plate-legend"><div><span class="k" style="background:var(--salvia)"></span>${esc(L.plate[0])}</div><div><span class="k" style="background:var(--curcuma)"></span>${esc(L.plate[1])}</div><div><span class="k" style="background:${isLeg?"var(--lenteja)":"var(--papaya)"}"></span>${isLeg?"Legumbre, plato único":esc(L.plate[2])}</div></div></div>
+       <span class="fchip"><span class="e">🍵</span>${esc(day.inf2)}</span><span class="fchip"><span class="e">🚫</span>Sin pan ni postre</span>${supPills(dk,"com")}`})}
+  ${mealCard({key:"m-mer",cc:"var(--papaya)",badgeHtml:`<span class="badge" style="--cc:var(--papaya)">${fe(day.mer)}</span>`,k:"Merienda, opcional",title:day.mer,c,
+     extra:`<p class="note">Sobre todo si cenas pronto.</p>`})}
+  ${mealCard({key:"m-cen",cc:CC[R[day.d].c],badgeHtml:badge(day.d),k:`Cena ${tagHtml(day.d)}`,tm:S.times.cen,title:R[day.d].n,rec:day.d,c,
+     extra:`<p class="note">Medio plato de verdura cocinada. Sin carne ni embutido por la noche.</p>${supPills(dk,"cen")}`})}
+  ${prep.length&&selDate<END?`<div class="card sun"><h3><span class="e">🌙</span> Para esta noche</h3>${prep.map(p=>`<p><span class="e">${p[0]}</span> ${esc(p[1])}</p>`).join("")}</div>`:""}
+  <div class="card"><h3><span class="e">💧</span> Agua</h3><p class="muted small">${water} de 8 vasos. Sube poco a poco hasta los 2 litros.</p>
+    <div class="water">${Array.from({length:8},(_,i)=>`<button type="button" class="glass" data-w="${i+1}" aria-pressed="${i<water}" aria-label="${i+1} vasos"></button>`).join("")}</div></div>
+  ${sportCard(dk)}
+  <div class="card"><h3><span class="e">📝</span> Cómo me he sentido</h3><p class="muted small">Síntomas, digestión, heces, energía… Para tu próxima revisión con Eva.</p>
+    <textarea id="nota" placeholder="Escribe aquí">${esc(c.nota||"")}</textarea></div>`;
+  const ta=document.getElementById("nota");let nt;
+  ta.addEventListener("input",()=>{clearTimeout(nt);nt=setTimeout(()=>{dayChecks(dk).nota=ta.value;save()},500)});
+}
+
+/* ---------- Calendario ---------- */
+function renderCal(){
+  const tk=ymd(today()), mon=addDays(START,weekSel*7), days=planFor(mon);
+  let grid=`<div class="cal">${"LMXJVSD".split("").map(x=>`<div class="hd">${x}</div>`).join("")}`;
+  for(let w=0;w<WEEKS;w++){const m=addDays(START,w*7);
+    for(let i=0;i<7;i++){const d=addDays(m,i),dk=ymd(d),p=planFor(m)[i];
+      grid+=`<button type="button" class="cell${dk===tk?" today":""}${w===weekSel?" cur":""}${FEST[dk]?" fest":""}" data-go="${dk}" aria-label="${longDate(d)}: ${esc(R[p.l].n)} y ${esc(R[p.d].n)}"><span class="n">${d.getDate()===1||(w===0&&i===0)?shortDate(d):d.getDate()}</span><span class="ee">${EM[p.l]}${EM[p.d]}</span></button>`}}
+  grid+="</div>";
+  const cnt={pes:0,car:0,leg:0,veg:0};days.forEach(d=>{const lc=R[d.l].c,dc=R[d.d].c;if(lc==="cf")cnt.pes++;if(dc==="df")cnt.pes++;if(lc==="cc")cnt.car++;if(lc==="cl")cnt.leg++;if(dc==="dv")cnt.veg++});
+  view.innerHTML=`<h1>Calendario</h1><p class="muted small" style="margin-bottom:6px">Del 16 de noviembre al 10 de enero. Toca un día para abrirlo.</p>
+  ${grid}
+  <div class="legend"><span>Cada día: comida y cena</span><span><span class="e">🐟</span> pescado</span><span><span class="e">🍗</span> carne blanca</span><span><span class="e">🍳</span> huevo</span><span><span class="e">🍲</span> legumbre o guiso</span><span style="display:inline-flex;align-items:center;gap:5px"><i style="width:7px;height:7px;border-radius:50%;background:var(--papaya);display:inline-block"></i> festivo</span></div>
+  <div class="section"><div class="wkchips" role="group" aria-label="Semana">${Array.from({length:WEEKS},(_,w)=>{const m=addDays(START,w*7);return `<button type="button" class="chip" data-ws="${w}" aria-pressed="${w===weekSel}">Semana ${w+1}, ${shortDate(m)}</button>`}).join("")}</div>
+  <h2>${weekLabel(mon)}</h2>
+  <p class="muted small"><span class="e">🐟</span> ${cnt.pes} pescado, <span class="e">🍗</span> ${cnt.car} carne blanca, <span class="e">🫘</span> ${cnt.leg} legumbre y <span class="e">🥕</span> ${cnt.veg} cenas vegetales.</p></div>
+  <div class="card sun"><h3><span class="e">🧑‍🍳</span> El domingo, adelanta trabajo</h3><p class="small">Cuece patata y boniato y guárdalos en la nevera, prepara porridge para tres desayunos y lava la quinoa y el arroz. Sin microondas: recalienta en cazo o en el horno.</p></div>
+  ${days.map((d,i)=>{const dt=addDays(mon,i),dk=ymd(dt);return `<div class="dayc${dk===tk?" is-today":""}">
+    <div class="dayc-h"><h3>${cap(DOW[i])} ${dt.getDate()}${FEST[dk]?` <span class="tag" style="--cc:var(--papaya)">${FEST[dk]}</span>`:""}</h3><button type="button" data-go="${dk}">Abrir día</button></div>
+    ${[["Desayuno",d.b],["Comida",d.l],["Cena",d.d]].map(([k,id])=>`<button type="button" class="row" data-rec="${id}">${badge(id)}<span><span class="k">${k}</span>${esc(R[id].n)}</span></button>`).join("")}
+    <div class="row" style="cursor:default"><span class="badge" style="--cc:var(--papaya)">${fe(d.mm)}</span><span><span class="k">Fruta</span>${[d.bfFruit,d.mm,d.mer].filter(Boolean).map(x=>`<span style="white-space:nowrap">${fe(x).replace('class="e"','class="e" style="font-size:1.1rem"')}</span>`).join(" ")} <span class="muted small">${cap([d.bfFruit,d.mm,d.mer+" (opcional)"].filter(Boolean).map(x=>x.toLowerCase()).join(", "))}</span></span></div>
+  </div>`}).join("")}`;
+}
+
+/* ---------- Suplementos (siempre el día de hoy) ---------- */
+function renderSup(){
+  const td=today(),dk=ymd(td),c=dayChecks(dk);
+  const last7=Array.from({length:7},(_,i)=>addDays(td,i-6));
+  const total=DAY_KEYS.filter(k=>k.startsWith("s-")).length;
+  const TE={des:"🌅",com:"☀️",cen:"🌙"};
+  view.innerHTML=`<h1>Suplementos</h1><div class="muted" style="margin:4px 0 14px">${longDate(td)}</div>
+  ${nowBanner(dk)}
+  ${TOMAS.map((t,ti)=>`<div class="card"><div class="tomah"><h3><span class="e">${TE[t.k]}</span> ${t.n}</h3><span class="muted small">${S.times[t.k]}</span></div>
+    ${SUP.filter(s=>s.p[ti]>0).map(s=>{const k=`s-${t.k}-${s.id}`;return `<button type="button" class="item" data-ck="${k}" aria-pressed="${!!c[k]}"><span class="tick sm" aria-hidden="true">${CHECK}</span><span class="nm"><b>${s.p[ti]}</b> ${esc(s.n)}</span></button>`}).join("")}
+    ${t.k!=="des"?'<p class="note">El Ergylase, justo antes de empezar a comer.</p>':""}</div>`).join("")}
+  <div class="section"><h2>Últimos 7 días</h2>
+    <div class="streak">${last7.map(d=>{const cc=S.checks[ymd(d)]||{};const n=DAY_KEYS.filter(k=>k.startsWith("s-")&&cc[k]).length;
+      return `<div class="d"><div class="b"><i style="height:${Math.round(n/total*100)}%"></i></div>${DOW[dowIdx(d)].slice(0,2)}</div>`}).join("")}</div></div>
+  <div class="section"><h2>Tu pauta</h2>
+    <div class="card">${SUP.map(s=>`<div class="sup"><div><b>${esc(s.n)}</b><div class="muted small">${esc(s.d)}</div></div><div><div class="dose">${s.p.join("-")}</div><div class="dosekey"><span>des.</span><span>com.</span><span>cena</span></div></div></div>`).join("")}</div>
+    <p class="muted small">El Ergymag queda retirado por ahora: Eva valorará cómo te encuentras sin él.</p></div>
+  <div class="section"><h2><span class="e">⏰</span> Avisos</h2>
+    <p class="small">Con la app abierta te avisa arriba cuando toca una toma. Para el aviso con el móvil bloqueado, usa el archivo de calendario Avisos suplementos.</p>
+    <div class="times">${TOMAS.map(t=>`<label>${t.n}<input type="time" data-time="${t.k}" value="${S.times[t.k]}"></label>`).join("")}</div></div>`;
+  view.querySelectorAll("[data-time]").forEach(inp=>inp.addEventListener("change",()=>{if(inp.value){S.times[inp.dataset.time]=inp.value;save()}}));
+}
+
+/* ---------- Recetas ---------- */
+function renderRecetas(){
+  const F=[["todas","Todas"],["b","🥞 Desayunos"],["com","🍽️ Comidas"],["cen","🌙 Cenas"],["fut","🫘 Más adelante"]];
+  const match=id=>{const c=R[id].c;if(recFilter==="todas")return true;if(recFilter==="com")return c[0]==="c";if(recFilter==="cen")return c[0]==="d";return c===recFilter};
+  const q=recQuery.trim().toLowerCase();
+  const ids=Object.keys(R).filter(match).filter(id=>!q||R[id].n.toLowerCase().includes(q)||R[id].ing.some(i=>i[0].toLowerCase().includes(q)));
+  view.innerHTML=`<h1>Recetas</h1><p class="muted small" style="margin-bottom:10px">Sin gluten, sin lácteos y sin azúcar, como piden tus pautas.</p>
+  <input type="search" id="rq" placeholder="Busca por plato o ingrediente" value="${esc(recQuery)}" aria-label="Buscar receta">
+  <div class="wkchips" role="group" aria-label="Filtrar" style="margin-top:8px">${F.map(f=>`<button type="button" class="chip" data-rf="${f[0]}" aria-pressed="${recFilter===f[0]}">${f[1]}</button>`).join("")}</div>
+  <div class="rlist">${ids.length?ids.map(id=>`<button type="button" class="rcard" data-rec="${id}">${badge(id)}<span><span class="n">${esc(R[id].n)}</span><span class="muted small">${esc(R[id].t)}</span> ${tagHtml(id)}</span></button>`).join(""):'<p class="muted">Ninguna receta lleva eso. Prueba con otro ingrediente.</p>'}</div>`;
+  const rq=document.getElementById("rq");
+  rq.addEventListener("input",()=>{recQuery=rq.value;const pos=rq.selectionStart;renderRecetas();const n=document.getElementById("rq");n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}});
+}
+
+/* ---------- Compra ---------- */
+function shoppingFor(mon){
+  const days=planFor(mon),items={},pantry={};
+  const add=(name,qty,unit,aisle)=>{if(!qty){pantry[name]=aisle;return}const k=name+"|"+unit;(items[k]||(items[k]={name,qty:0,unit,aisle})).qty+=qty};
+  days.forEach(d=>[d.b,d.l,d.d].forEach(id=>R[id].ing.forEach(i=>add(...i))));
+  const fp={};days.forEach(d=>[d.bfFruit,d.mm,d.mer].filter(Boolean).forEach(f=>{const real=FRUIT[f]&&FRUIT[f].as?FRUIT[f].as:f;fp[real]=(fp[real]||0)+1}));
+  Object.entries(fp).forEach(([f,n])=>{const info=FRUIT[f];if(info.u==="g")add(f,n*info.g,"g","fru");else add(f,Math.ceil(n/info.per),"ud","fru")});
+  STAPLES.forEach(([n,a])=>{if(!Object.values(items).some(it=>it.name===n))pantry[n]=a});
+  Object.values(items).forEach(it=>{delete pantry[it.name]});
+  return {items:Object.values(items),pantry};
+}
+function fmtQty(q,u){
+  if(u==="g")return q>=1000?`${(Math.round(q/100)/10).toString().replace(".",",")} kg`:`${Math.round(q/10)*10} g`;
+  if(u==="ml")return q>=1000?`${(Math.round(q/100)/10).toString().replace(".",",")} l`:`${q} ml`;
+  const n=Math.ceil(q);if(u==="ud")return `${n}`;if(u==="diente")return `${n} ${n>1?"dientes":"diente"}`;if(u==="manojo")return `${n} ${n>1?"manojos":"manojo"}`;return `${n} ${u}`;
+}
+function renderCompra(){
+  const mon=addDays(START,weekSel*7),wk=ymd(mon);
+  const {items,pantry}=shoppingFor(mon),done=S.shop[wk]||{},custom=S.custom[wk]||[];
+  const groups={};items.forEach(it=>(groups[it.aisle]||(groups[it.aisle]=[])).push(it));
+  const allKeys=[...items.map(i=>"i:"+i.name),...custom.map(c=>"c:"+c)],got=allKeys.filter(k=>done[k]).length;
+  const it=(k,name,qt)=>`<button type="button" class="item" data-shop="${esc(k)}" aria-pressed="${!!done[k]}"><span class="tick sm" aria-hidden="true">${CHECK}</span><span class="nm">${esc(name)}</span>${qt!==undefined?`<span class="qt">${qt}</span>`:""}</button>`;
+  view.innerHTML=`<h1>Compra</h1>
+  <div class="wkchips" role="group" aria-label="Semana" style="margin-top:8px">${Array.from({length:WEEKS},(_,w)=>{const m=addDays(START,w*7);return `<button type="button" class="chip" data-ws="${w}" aria-pressed="${w===weekSel}">Semana ${w+1}, ${shortDate(m)}</button>`}).join("")}</div>
+  <h2>${weekLabel(mon)}</h2>
+  <div class="progress"><i style="width:${allKeys.length?Math.round(got/allKeys.length*100):0}%"></i></div>
+  <p class="muted small">${got} de ${allKeys.length} en la cesta. Cantidades para una persona.</p>
+  <div class="btnrow"><button type="button" class="btn alt" id="copyList">Copiar lista</button>${got?'<button type="button" class="btn alt" id="clearList">Desmarcar todo</button>':""}</div>
+  ${Object.keys(AISLES).filter(a=>groups[a]).map(a=>`<div class="shop-sec"><h3><span class="e">${AE[a]}</span> ${AISLES[a]}</h3>
+    ${groups[a].sort((x,y)=>x.name.localeCompare(y.name,"es")).map(i=>it("i:"+i.name,i.name,fmtQty(i.qty,i.unit))).join("")}</div>`).join("")}
+  ${custom.length?`<div class="shop-sec"><h3><span class="e">✍️</span> Añadido por ti</h3>${custom.map(cn=>`<div style="display:flex;align-items:center">${it("c:"+cn,cn)}<button type="button" class="ghost" data-delc="${esc(cn)}" aria-label="Quitar ${esc(cn)}">Quitar</button></div>`).join("")}</div>`:""}
+  <div class="addrow"><input type="text" id="newItem" placeholder="Añadir otra cosa" aria-label="Añadir artículo"><button type="button" class="btn" id="addItem">Añadir</button></div>
+  <div class="shop-sec"><h3><span class="e">🫙</span> Despensa: revisa si te queda</h3><p class="muted small">Se usan poco a poco. Márcalos si los tienes o los compras.</p>
+    ${Object.keys(pantry).sort((x,y)=>x.localeCompare(y,"es")).map(n=>it("p:"+n,n)).join("")}</div>`;
+  const ni=document.getElementById("newItem");
+  const addIt=()=>{const v=ni.value.trim();if(!v)return;const l=S.custom[wk]||(S.custom[wk]=[]);if(!l.includes(v))l.push(v);save();renderCompra()};
+  document.getElementById("addItem").onclick=addIt;ni.addEventListener("keydown",e=>{if(e.key==="Enter")addIt()});
+  const cl=document.getElementById("clearList");if(cl)cl.onclick=()=>{S.shop[wk]={};save();renderCompra()};
+  document.getElementById("copyList").onclick=async e=>{const b=e.currentTarget;
+    const txt=`Compra, ${weekLabel(mon).toLowerCase()}\n`+Object.keys(AISLES).filter(a=>groups[a]).map(a=>`\n${AISLES[a]}\n`+groups[a].filter(i=>!done["i:"+i.name]).map(i=>`- ${i.name}: ${fmtQty(i.qty,i.unit)}`).join("\n")).join("\n")+(custom.length?`\n\nOtros\n`+custom.map(c=>"- "+c).join("\n"):"");
+    try{await navigator.clipboard.writeText(txt);b.textContent="Lista copiada"}catch(err){const ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");b.textContent="Lista copiada"}catch(e2){b.textContent="No se pudo copiar"}ta.remove()}
+    setTimeout(()=>{b.textContent="Copiar lista"},2200)};
+}
+
+/* ---------- Deporte y peso ---------- */
+const SPORTS=[["Caminar","🚶‍♀️"],["Correr","🏃‍♀️"],["Bici","🚴‍♀️"],["Fuerza","🏋️‍♀️"],["Fit boxing","🥊"],["Ballet fit","🩰"],["Yoga o pilates","🧘‍♀️"],["Natación","🏊‍♀️"],["Otro","⚡"]];
+const INTS=[["suave","Suave"],["media","Media"],["intensa","Intensa"]];
+let spType="Caminar",spInt="media",spMinVal="",progDate=ymd(today());
+const sportEmoji=t=>(SPORTS.find(s=>s[0]===t)||SPORTS[SPORTS.length-1])[1];
+const fmtKg=v=>v.toFixed(1).replace(".",",")+" kg";
+const parseDk=k=>{const [y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)};
+function sportCard(dk){
+  const list=S.sport[dk]||[],tot=list.reduce((a,s)=>a+s.min,0),long=list.some(s=>s.min>=75||s.int==="intensa");
+  return `<div class="card"><h3><span class="e">🏃‍♀️</span> Deporte</h3>
+  ${list.length?`<div>${list.map((s,i)=>`<div class="sp-row"><span class="e">${sportEmoji(s.t)}</span><span class="nm"><b>${esc(s.t)}</b> <span class="muted small">${s.min} min, ${s.int}</span></span><button type="button" class="ghost" data-delsport="${i}" aria-label="Borrar ${esc(s.t)}">Borrar</button></div>`).join("")}</div><p class="muted small">${tot} min en total.</p>`:`<p class="muted small">¿Has entrenado? Elige qué, cuánto rato y cómo de intenso.</p>`}
+  <div class="sp-chips" role="group" aria-label="Tipo de deporte">${SPORTS.map(s=>`<button type="button" class="chip" data-st="${s[0]}" aria-pressed="${spType===s[0]}"><span class="e">${s[1]}</span> ${s[0]}</button>`).join("")}</div>
+  <div class="sp-add"><label class="small muted">Minutos<input type="number" id="spMin" inputmode="numeric" min="1" max="600" placeholder="45" value="${esc(spMinVal)}"></label>
+   <div class="seg" role="group" aria-label="Intensidad">${INTS.map(x=>`<button type="button" data-si="${x[0]}" aria-pressed="${spInt===x[0]}">${x[1]}</button>`).join("")}</div>
+   <button type="button" class="btn" data-addsport>Añadir</button></div>
+  ${long?`<p class="note"><span class="e">💧</span> Hoy has sudado: bebe algo más de agua. En entrenamientos largos, Eva valorará reponer electrolitos.</p>`:""}</div>`;
+}
+function renderProg(){
+  const tk=progDate,v=S.weights[tk];
+  const W=Object.entries(S.weights).filter(([k,x])=>x).sort((a,b)=>a[0]<b[0]?-1:1);
+  let chart="";
+  if(W.length>=2){const vs=W.map(w=>w[1]);let mn=Math.min(...vs),mx=Math.max(...vs);if(mx-mn<2){const c=(mx+mn)/2;mn=c-1;mx=c+1}
+    const t0=parseDk(W[0][0]).getTime(),t1=parseDk(W[W.length-1][0]).getTime();
+    const X=k=>40+(t1===t0?0:(parseDk(k)-t0)/(t1-t0))*280,Y=x=>140-(x-mn)/(mx-mn)*110;
+    const pts=W.map(([k,x])=>`${X(k).toFixed(1)},${Y(x).toFixed(1)}`).join(" ");
+    const f=d=>shortDate(parseDk(d));
+    chart=`<div class="wchart"><svg viewBox="0 0 340 170" role="img" aria-label="Evolución del peso"><line class="gl" x1="40" x2="325" y1="${Y(mx)}" y2="${Y(mx)}"/><line class="gl" x1="40" x2="325" y1="${Y(mn)}" y2="${Y(mn)}"/><text x="2" y="${Y(mx)+4}">${mx.toFixed(1).replace(".",",")}</text><text x="2" y="${Y(mn)+4}">${mn.toFixed(1).replace(".",",")}</text><polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${W.map(([k,x])=>`<circle cx="${X(k).toFixed(1)}" cy="${Y(x).toFixed(1)}" r="4.5" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5"/>`).join("")}<text x="40" y="164">${f(W[0][0])}</text><text x="325" y="164" text-anchor="end">${f(W[W.length-1][0])}</text></svg></div>`}
+  // deporte por semana del plan
+  const wk=Array.from({length:WEEKS},(_,w)=>{let m=0,n=0;for(let i=0;i<7;i++){(S.sport[ymd(addDays(START,w*7+i))]||[]).forEach(s=>{m+=s.min;n++})}return {m,n}});
+  const mxw=Math.max(60,...wk.map(x=>x.m)),cw=Math.max(0,Math.min(WEEKS-1,weekIdxOf(today())));
+  const tmon=mondayOf(today());let tm=0,tn=0,types={};for(let i=0;i<7;i++)(S.sport[ymd(addDays(tmon,i))]||[]).forEach(s=>{tm+=s.min;tn++;types[s.t]=1});
+  const recent=Object.keys(S.sport).sort().reverse().flatMap(k=>(S.sport[k]||[]).map(s=>[k,s])).slice(0,10);
+  view.innerHTML=`<h1>Progreso</h1><p class="muted small" style="margin-bottom:10px">Tu peso y el deporte que vas haciendo. Elige el día para apuntar o corregir.</p>
+  <label class="small muted" style="display:flex;flex-direction:column;gap:4px;max-width:220px">Día<input type="date" id="progDate" value="${progDate}" max="${ymd(today())}"></label>
+  <div class="section"><h2><span class="e">⚖️</span> Peso</h2>
+  <div class="card"><div class="sp-add"><label class="small muted">En kilos<input type="number" data-peso="${tk}" inputmode="decimal" step="0.1" min="30" max="250" placeholder="—" value="${v??""}"></label>${v?`<button type="button" class="ghost" data-delpeso="${tk}">Borrar</button>`:""}</div>
+  <p class="muted small">Con pesarte una vez por semana basta: en ayunas y a la misma hora. Eva valorará el peso más adelante; ahora lo importante es comer bien y quedarte saciada.</p></div>
+  ${W.length?`<div class="stat"><div><b>${fmtKg(W[0][1])}</b>${shortDate(parseDk(W[0][0]))}</div><div><b>${fmtKg(W[W.length-1][1])}</b>${shortDate(parseDk(W[W.length-1][0]))}</div><div><b>${W.length}</b>${W.length>1?"registros":"registro"}</div></div>`:`<p class="muted small">Aún no hay pesos apuntados. Cuando tengas dos, verás aquí la gráfica.</p>`}
+  ${chart}
+  ${W.length?`<div class="card">${W.slice(-8).reverse().map(([k,x])=>`<div class="sp-row"><span class="nm">${longDate(parseDk(k))}</span><b>${fmtKg(x)}</b><button type="button" class="ghost" data-delpeso="${k}" aria-label="Borrar peso del ${longDate(parseDk(k))}">Borrar</button></div>`).join("")}</div>`:""}</div>
+  <div class="section"><h2><span class="e">🏃‍♀️</span> Deporte</h2>
+  <div class="stat"><div><b>${tn}</b>${tn===1?"sesión":"sesiones"} esta semana</div><div><b>${tm}</b>min esta semana</div><div><b>${Object.keys(types).length}</b>${Object.keys(types).length===1?"tipo":"tipos"}</div></div>
+  <div class="card"><h3>Minutos por semana del plan</h3><div class="bars">${wk.map((x,w)=>`<div class="bc${w===cw?" cur":""}">${x.m?`<b>${x.m}</b>`:""}<i style="height:${Math.round(x.m/mxw*100)}%"></i>S${w+1}</div>`).join("")}</div></div>
+  ${sportCard(tk)}
+  ${recent.length?`<div class="card"><h3>Últimas sesiones</h3>${recent.map(([k,s])=>`<div class="sp-row"><span class="e">${sportEmoji(s.t)}</span><span class="nm"><b>${esc(s.t)}</b><br><span class="muted small">${longDate(parseDk(k))}</span></span><span class="muted small">${s.min} min, ${s.int}</span></div>`).join("")}</div>`:""}</div>`;
+}
+document.addEventListener("input",e=>{if(e.target.id==="spMin")spMinVal=e.target.value});
+document.addEventListener("change",e=>{if(e.target.id==="progDate"){if(e.target.value){progDate=e.target.value;keepScroll(render)}return}const p=e.target.dataset&&e.target.dataset.peso;if(p===undefined)return;
+  const x=parseFloat(String(e.target.value).replace(",","."));if(x>=30&&x<=250)S.weights[p]=Math.round(x*10)/10;else if(!e.target.value)delete S.weights[p];else return;save();keepScroll(render)});
+
+/* ---------- Hojas ---------- */
+const sheet=document.getElementById("sheet"),sheetBg=document.getElementById("sheetBg");let lastFocus=null;
+function openSheet(html){lastFocus=document.activeElement;sheet.innerHTML=`<div class="grab"></div><button type="button" class="ghost closebtn" data-close>Cerrar</button>`+html;sheetBg.style.display="block";requestAnimationFrame(()=>sheet.classList.add("open"));sheet.scrollTop=0;sheet.querySelector("[data-close]").focus()}
+function closeSheet(){if(!sheet.classList.contains("open"))return;sheet.classList.remove("open");sheetBg.style.display="none";if(lastFocus&&document.contains(lastFocus))lastFocus.focus()}
+function openRecipe(id){const r=R[id];
+  openSheet(`<div class="bigb" style="--cc:${CC[r.c]}"><span class="e">${EM[id]}</span></div>
+  <h2 id="sheetTitle">${esc(r.n)}</h2><p class="muted small">${tagHtml(id)} <span class="e">⏱️</span> ${esc(r.t)}</p>
+  ${r.plate?`<p class="small muted">½ plato ${esc(r.plate[0].toLowerCase())}, ¼ ${esc(r.plate[1].toLowerCase())}${r.c==="cl"?", con la legumbre como plato único":`, ¼ ${esc(r.plate[2].toLowerCase())}`}.</p>`:""}
+  <h3 style="margin-top:16px">Ingredientes para ti</h3><ul class="ing">${r.ing.map(i=>`<li><span>${esc(i[0])}</span><span>${i[1]?fmtQty(i[1],i[2]):"al gusto"}</span></li>`).join("")}</ul>
+  <h3 style="margin-top:16px">Paso a paso</h3><ol>${r.st.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>
+  ${r.nota?`<div class="card sun small"><span class="e">💡</span> ${esc(r.nota)}</div>`:""}
+  <p class="muted small">Usa especias (cúrcuma, jengibre, tomillo, romero) en lugar de mucha sal. Sin microondas.</p>`)}
+function openAvoid(){const A=[["🥛","Lácteos","Queso, yogur, leche, nata, helado. Tampoco sin lactosa."],["🌾","Gluten","Trigo, centeno, espelta, kamut, cebada y avena."],["🍬","Azúcar y edulcorantes","Ni sacarina, ni stevia, ni miel."],["🍪","Grasas trans y procesados","Galletas, bollería, patatas fritas, margarinas, comida rápida."],["☕","Bebidas","Alcohol, refrescos, café, zumos (naturales o no) y kombucha."],["🥓","Carnes","Fritos y rebozados, carne roja, cerdo, embutidos y ahumados. Pavo natural >95%, solo ocasional."],["🍅","Frutas y verduras","Naranja, fresas, kiwi, tomate, pimiento, berenjena, lechuga y frutas secas (dátiles, pasas)."],["🥜","Frutos secos","Cacahuetes, pistachos y frutos secos en general."],["🍕","Cereales y harinas","Maíz, levaduras (pan, pizza), harinas refinadas, arroz blanco, pasta blanca y arroz basmati."],["🍫","Otros","Chocolate y cacao. Conservas, mejor en cristal. Emperador y pez espada."]];
+  openSheet(`<div class="avoid"><h2 id="sheetTitle">Qué evitar en esta fase</h2>${A.map(a=>`<h3><span class="e">${a[0]}</span> ${a[1]}</h3><p>${a[2]}</p>`).join("")}<div class="card small"><span class="e">✉️</span> ¿Dudas cortas? Escribe a Eva a info@kineva.es.</div></div>`)}
+sheetBg.addEventListener("click",closeSheet);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet()});
+document.getElementById("avoidBtn").onclick=openAvoid;
+
+/* ---------- Eventos ---------- */
+const keepScroll=fn=>{const y=scrollY;fn();scrollTo(0,y)};
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-close],[data-rec],[data-ck],[data-allsup],[data-w],[data-go],[data-wk],[data-today],[data-ws],[data-rf],[data-shop],[data-delc],[data-st],[data-si],[data-addsport],[data-delsport],[data-delpeso]");
+  if(!t)return;
+  if(t.dataset.close!==undefined)return closeSheet();
+  if(t.dataset.st){spType=t.dataset.st;return keepScroll(render)}
+  if(t.dataset.si){spInt=t.dataset.si;return keepScroll(render)}
+  if(t.dataset.addsport!==undefined){const n=parseInt(spMinVal,10);const inp=document.getElementById("spMin");if(!(n>0&&n<=600)){if(inp){inp.focus();inp.placeholder="¿Minutos?"}return}
+    const dk=route()==="progreso"?progDate:ymd(selDate);(S.sport[dk]||(S.sport[dk]=[])).push({t:spType,min:n,int:spInt});spMinVal="";save();return keepScroll(render)}
+  if(t.dataset.delsport!==undefined){const dk=route()==="progreso"?progDate:ymd(selDate);(S.sport[dk]||[]).splice(+t.dataset.delsport,1);if(S.sport[dk]&&!S.sport[dk].length)delete S.sport[dk];save();return keepScroll(render)}
+  if(t.dataset.delpeso){delete S.weights[t.dataset.delpeso];save();return keepScroll(render)}
+  if(t.dataset.delc!==undefined){const wk=ymd(addDays(START,weekSel*7));S.custom[wk]=(S.custom[wk]||[]).filter(x=>x!==t.dataset.delc);save();return keepScroll(renderCompra)}
+  if(t.dataset.rec)return openRecipe(t.dataset.rec);
+  const ckDate=route()==="suplementos"?today():selDate;
+  if(t.dataset.ck){const c=dayChecks(ymd(ckDate));c[t.dataset.ck]=!c[t.dataset.ck];save();return keepScroll(render)}
+  if(t.dataset.allsup){const c=dayChecks(ymd(today()));const ti=TOMAS.findIndex(x=>x.k===t.dataset.allsup);SUP.forEach(s=>{if(s.p[ti]>0)c[`s-${t.dataset.allsup}-${s.id}`]=true});save();return keepScroll(render)}
+  if(t.dataset.w){const c=dayChecks(ymd(selDate)),n=+t.dataset.w;c.w=c.w===n?n-1:n;save();return keepScroll(render)}
+  if(t.dataset.go){const [y,m,d]=t.dataset.go.split("-").map(Number);selDate=new Date(y,m-1,d);weekSel=weekIdxOf(selDate);
+    if(route()!=="hoy"){location.hash="#hoy";return}return keepScroll(render)}
+  if(t.dataset.wk){selDate=clampDate(addDays(selDate,7*+t.dataset.wk));weekSel=weekIdxOf(selDate);return keepScroll(render)}
+  if(t.dataset.today!==undefined){selDate=clampDate(today());weekSel=weekIdxOf(selDate);return render()}
+  if(t.dataset.ws){weekSel=+t.dataset.ws;return keepScroll(render)}
+  if(t.dataset.rf){recFilter=t.dataset.rf;return renderRecetas()}
+  if(t.dataset.shop){const wk=ymd(addDays(START,weekSel*7)),d=S.shop[wk]||(S.shop[wk]={});d[t.dataset.shop]=!d[t.dataset.shop];save();return keepScroll(renderCompra)}
+});
+const ROUTES={progreso:renderProg,hoy:renderHoy,calendario:renderCal,suplementos:renderSup,recetas:renderRecetas,compra:renderCompra};
+const route=()=>{const h=location.hash.replace("#","");return h==="semana"?"calendario":ROUTES[h]?h:"hoy"};
+function render(){const r=route();ROUTES[r]();document.querySelectorAll(".tabs a").forEach(a=>a.removeAttribute("aria-current"));const a=document.querySelector(`.tabs a[data-tab="${r}"]`);if(a)a.setAttribute("aria-current","page")}
+let lastRoute=route();
+window.addEventListener("hashchange",()=>{const r=route();closeSheet();if(r!==lastRoute){lastRoute=r;render();scrollTo(0,0)}else render()});
+let lastDay=ymd(today());
+function tickClock(){const d=ymd(today());if(d!==lastDay){if(ymd(selDate)===lastDay)selDate=clampDate(today());lastDay=d}
+  const a=document.activeElement;if((route()==="hoy"||route()==="suplementos")&&!(a&&(a.tagName==="TEXTAREA"||a.tagName==="INPUT"))&&!sheet.classList.contains("open"))keepScroll(render)}
+setInterval(tickClock,60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)tickClock()});
+render();
+</script>
+<script>
+/* ---------- Versión independiente: copia de seguridad e instalación ---------- */
+if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}))}
+let installEvt=null;
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;if(route()==="progreso")keepScroll(render)});
+const backupHtml=()=>`<div class="section"><h2><span class="e">💾</span> Tus datos</h2>
+  <div class="card"><p class="small">Todo se guarda en este móvil. Haz una copia de vez en cuando por si cambias de teléfono o borras los datos del navegador.</p>
+  <div class="btnrow">${installEvt?'<button type="button" class="btn" id="bkInstall">Instalar la app</button>':""}<button type="button" class="btn alt" id="bkExport">Guardar copia</button><button type="button" class="btn alt" id="bkImport">Recuperar copia</button></div>
+  <input type="file" id="bkFile" accept="application/json,.json" hidden></div></div>`;
+ROUTES.progreso=function(){renderProg();view.insertAdjacentHTML("beforeend",backupHtml());
+  const ex=document.getElementById("bkExport"),im=document.getElementById("bkImport"),f=document.getElementById("bkFile"),ins=document.getElementById("bkInstall");
+  ex.onclick=()=>{const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`mi-plan-copia-${ymd(today())}.json`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)};
+  im.onclick=()=>f.click();
+  f.onchange=async()=>{const file=f.files[0];if(!file)return;try{const d=JSON.parse(await file.text());if(!d||typeof d!=="object"||!d.checks)throw 0;
+      if(!confirm("Esto sustituye los datos de este móvil por los de la copia. ¿Seguimos?"))return;S=norm(d);save();render();alert("Copia recuperada.")}catch(e){alert("Ese archivo no parece una copia de Mi plan.")}};
+  if(ins)ins.onclick=async()=>{installEvt.prompt();await installEvt.userChoice;installEvt=null;keepScroll(render)};
+};
+if(route()==="progreso")render();
+</script>
+</body>
+</html>

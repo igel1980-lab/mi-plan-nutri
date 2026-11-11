@@ -1,0 +1,17 @@
+MI PLAN - cómo publicarla en Vercel
+
+Opción A, con GitHub (todo desde el navegador):
+1. Crea una cuenta en github.com y pulsa New repository (por ejemplo, "mi-plan").
+2. Dentro del repositorio: Add file > Upload files, arrastra TODOS estos archivos y pulsa Commit changes.
+3. Entra en vercel.com con tu cuenta de GitHub, pulsa Add New > Project, elige "mi-plan" e Import.
+4. En Framework Preset deja "Other" y pulsa Deploy. En un minuto tendrás una dirección tipo mi-plan.vercel.app.
+
+Opción B, con el ordenador y Node instalado:
+1. Abre una terminal en esta carpeta.
+2. Escribe: npx vercel --prod   y sigue las preguntas (inicia sesión, acepta los valores por defecto).
+
+En el móvil Android:
+1. Abre la dirección de Vercel en Chrome.
+2. Menú ⋮ > Instalar aplicación (o Añadir a pantalla de inicio). Saldrá con el icono del plato.
+
+Para actualizarla: sube los archivos nuevos al mismo repositorio (o repite npx vercel --prod).
