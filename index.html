@@ -243,6 +243,7 @@ input[type="number"],input[type="date"]{border:1px solid var(--line);border-radi
 .bars .bc i{width:100%;background:var(--mar);border-radius:8px 8px 3px 3px;min-height:3px}
 .bars .bc.cur i{background:var(--accent)}
 .bars .bc b{color:var(--ink);font-size:.75rem}
+.bcrow{display:flex;align-items:center;gap:8px}.bcrow .item{flex:1}.bcrow .ghost{flex:none}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
@@ -557,6 +558,7 @@ function nowBanner(dk){
   for(let ti=0;ti<3;ti++){const t=TOMAS[ti],tm=toMin(S.times[t.k]);
     if(m>=tm-30&&m<=tm+90){const pend=SUP.filter(s=>s.p[ti]>0&&!c[`s-${t.k}-${s.id}`]);
       if(pend.length) return `<div class="now"><span class="e" style="font-size:1.6rem">⏰</span><div><b>Toca la toma de ${t.n.toLowerCase()}</b><div class="small">${pend.map(s=>`${s.p[ti]} ${esc(s.n)}`).join(", ")}</div></div><button type="button" data-allsup="${t.k}">Hecho</button></div>`}}
+  const pt=toMin(TM("prep"));if(m>=pt-15&&m<=pt+150&&!c.prep&&prepFor(today()).length)return `<div class="now"><span class="e" style="font-size:1.6rem">🌙</span><div><b>Prepara lo de mañana</b><div class="small">${prepFor(today()).map(p=>esc(p[1])).join(" ")}</div></div><button type="button" data-ck="prep">Hecho</button></div>`;
   return "";
 }
 function strip(){
@@ -576,14 +578,11 @@ function renderHoy(){
   const dk=ymd(selDate),day=dayPlan(selDate),c=dayChecks(dk),tdy=today(),isToday=dk===ymd(tdy);
   const di=Math.round((selDate-START)/864e5)+1;
   const tomorrow=addDays(selDate,1),tday=dayPlan(tomorrow);
-  const prep=[];
-  { if(R[tday.b].prev==="sarraceno") prep.push(["🫙","Pon el trigo sarraceno en remojo para los crepes del desayuno."]);
-    const pv=R[tday.l].prev; if(pv) prep.push(["🥔",`Cuece ${pv==="patata"?"la patata":"el boniato"} de mañana y guárdalo 24 h en la nevera.`]);
-    if(tday.b==="b3"&&day.b!=="b3") prep.push(["🥣","Si no te queda porridge, prepáralo para los próximos días."]); }
   const L=R[day.l],isLeg=L.c==="cl",water=c.w||0,fest=FEST[dk];
   const before=tdy<START?Math.round((START-tdy)/864e5):0;
   view.innerHTML=`
-  ${before?`<div class="card sun"><b><span class="e">🌱</span> Tu plan empieza el lunes 16 de noviembre</b><p class="small">Quedan ${before} ${before>1?"días":"día"}. Mientras, ve haciendo la compra de la primera semana y sigue con los suplementos.</p></div>`:""}
+  ${before?`<div class="card sun"><b><span class="e">🌱</span> Tu plan empieza el lunes 16 de noviembre</b><p class="small">Quedan ${before} ${before>1?"días":"día"}. Mientras, ve haciendo la compra de la primera semana y sigue con los suplementos.</p><button type="button" class="btn" data-batch="${ymd(START)}|0">Ver el primer batch cooking, domingo 15</button></div>`:""}
+  ${batchToday()}
   <div class="hero"><div style="position:relative;z-index:1"><h1>${longDate(selDate)}</h1>
     <div class="sub">Día ${di} de ${WEEKS*7}${isToday?", hoy":""}${!isToday&&inRange(tdy)?` <button type="button" class="todaylink" data-today>Ir a hoy</button>`:""}</div></div>
     <div style="position:relative;z-index:1">${ringSvg(dayProgress(dk))}<b style="position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display)">${Math.round(dayProgress(dk)*100)}%</b></div></div>
@@ -597,15 +596,15 @@ function renderHoy(){
   ${mealCard({key:"m-mm",cc:"var(--curcuma)",badgeHtml:`<span class="badge" style="--cc:var(--curcuma)">${fe(day.mm)}</span>`,k:"Media mañana",title:`Un trozo de ${day.mm.toLowerCase()}`,c,
      extra:`<p class="note">Activa las enzimas digestivas antes de comer.</p>`})}
   ${mealCard({key:"m-com",cc:CC[L.c],badgeHtml:badge(day.l),k:`Comida ${tagHtml(day.l)}`,tm:S.times.com,title:L.n,rec:day.l,c,
-     extra:`<p class="note"><span class="e">🍋</span> Antes, un vaso de agua con 2 gotas de limón y el Ergylase.</p>
+     extra:`${bcChip(day.l)}<p class="note"><span class="e">🍋</span> Antes, un vaso de agua con 2 gotas de limón y el Ergylase.</p>
        <div class="plate-wrap"><button type="button" class="platebtn" data-rec="${day.l}" aria-label="Ver receta">${plateSvg(isLeg)}</button>
        <div class="plate-legend"><div><span class="k" style="background:var(--salvia)"></span>${esc(L.plate[0])}</div><div><span class="k" style="background:var(--curcuma)"></span>${esc(L.plate[1])}</div><div><span class="k" style="background:${isLeg?"var(--lenteja)":"var(--papaya)"}"></span>${isLeg?"Legumbre, plato único":esc(L.plate[2])}</div></div></div>
        <span class="fchip"><span class="e">🍵</span>${esc(day.inf2)}</span><span class="fchip"><span class="e">🚫</span>Sin pan ni postre</span>${supPills(dk,"com")}`})}
   ${mealCard({key:"m-mer",cc:"var(--papaya)",badgeHtml:`<span class="badge" style="--cc:var(--papaya)">${fe(day.mer)}</span>`,k:"Merienda, opcional",title:day.mer,c,
      extra:`<p class="note">Sobre todo si cenas pronto.</p>`})}
   ${mealCard({key:"m-cen",cc:CC[R[day.d].c],badgeHtml:badge(day.d),k:`Cena ${tagHtml(day.d)}`,tm:S.times.cen,title:R[day.d].n,rec:day.d,c,
-     extra:`<p class="note">Medio plato de verdura cocinada. Sin carne ni embutido por la noche.</p>${supPills(dk,"cen")}`})}
-  ${prep.length&&selDate<END?`<div class="card sun"><h3><span class="e">🌙</span> Para esta noche</h3>${prep.map(p=>`<p><span class="e">${p[0]}</span> ${esc(p[1])}</p>`).join("")}</div>`:""}
+     extra:`${bcChip(day.d)}<p class="note">Medio plato de verdura cocinada. Sin carne ni embutido por la noche.</p>${supPills(dk,"cen")}`})}
+  ${prepCard(dk,c)}
   <div class="card"><h3><span class="e">💧</span> Agua</h3><p class="muted small">${water} de 8 vasos. Sube poco a poco hasta los 2 litros.</p>
     <div class="water">${Array.from({length:8},(_,i)=>`<button type="button" class="glass" data-w="${i+1}" aria-pressed="${i<water}" aria-label="${i+1} vasos"></button>`).join("")}</div></div>
   ${sportCard(dk)}
@@ -630,7 +629,7 @@ function renderCal(){
   <div class="section"><div class="wkchips" role="group" aria-label="Semana">${Array.from({length:WEEKS},(_,w)=>{const m=addDays(START,w*7);return `<button type="button" class="chip" data-ws="${w}" aria-pressed="${w===weekSel}">Semana ${w+1}, ${shortDate(m)}</button>`}).join("")}</div>
   <h2>${weekLabel(mon)}</h2>
   <p class="muted small"><span class="e">🐟</span> ${cnt.pes} pescado, <span class="e">🍗</span> ${cnt.car} carne blanca, <span class="e">🫘</span> ${cnt.leg} legumbre y <span class="e">🥕</span> ${cnt.veg} cenas vegetales.</p></div>
-  <div class="card sun"><h3><span class="e">🧑‍🍳</span> El domingo, adelanta trabajo</h3><p class="small">Cuece patata y boniato y guárdalos en la nevera, prepara porridge para tres desayunos y lava la quinoa y el arroz. Sin microondas: recalienta en cazo o en el horno.</p></div>
+  ${batchCard(mon)}
   ${days.map((d,i)=>{const dt=addDays(mon,i),dk=ymd(dt);return `<div class="dayc${dk===tk?" is-today":""}">
     <div class="dayc-h"><h3>${cap(DOW[i])} ${dt.getDate()}${FEST[dk]?` <span class="tag" style="--cc:var(--papaya)">${FEST[dk]}</span>`:""}</h3><button type="button" data-go="${dk}">Abrir día</button></div>
     ${[["Desayuno",d.b],["Comida",d.l],["Cena",d.d]].map(([k,id])=>`<button type="button" class="row" data-rec="${id}">${badge(id)}<span><span class="k">${k}</span>${esc(R[id].n)}</span></button>`).join("")}
@@ -656,8 +655,10 @@ function renderSup(){
     <div class="card">${SUP.map(s=>`<div class="sup"><div><b>${esc(s.n)}</b><div class="muted small">${esc(s.d)}</div></div><div><div class="dose">${s.p.join("-")}</div><div class="dosekey"><span>des.</span><span>com.</span><span>cena</span></div></div></div>`).join("")}</div>
     <p class="muted small">El Ergymag queda retirado por ahora: Eva valorará cómo te encuentras sin él.</p></div>
   <div class="section"><h2><span class="e">⏰</span> Avisos</h2>
-    <p class="small">Con la app abierta te avisa arriba cuando toca una toma. Para el aviso con el móvil bloqueado, usa el archivo de calendario Avisos suplementos.</p>
-    <div class="times">${TOMAS.map(t=>`<label>${t.n}<input type="time" data-time="${t.k}" value="${S.times[t.k]}"></label>`).join("")}</div></div>`;
+    <p class="small">Con la app abierta te avisa arriba cuando toca una toma o preparar lo de mañana. Para el aviso con el móvil bloqueado, usa el archivo de calendario Avisos mi plan.</p>
+    <div class="times">${TOMAS.map(t=>`<label>${t.n}<input type="time" data-time="${t.k}" value="${S.times[t.k]}"></label>`).join("")}</div>
+    <h3 style="margin-top:16px"><span class="e">🧑‍🍳</span> Cocina</h3>
+    <div class="times">${[["prep","Preparar mañana"],["bcSun","Batch domingo"],["bcWed","Batch miércoles"]].map(([k,n])=>`<label>${n}<input type="time" data-time="${k}" value="${TM(k)}"></label>`).join("")}</div></div>`;
   view.querySelectorAll("[data-time]").forEach(inp=>inp.addEventListener("change",()=>{if(inp.value){S.times[inp.dataset.time]=inp.value;save()}}));
 }
 
@@ -719,6 +720,92 @@ function renderCompra(){
     setTimeout(()=>{b.textContent="Copiar lista"},2200)};
 }
 
+/* ---------- Batch cooking y preparación ---------- */
+const TM=k=>S.times[k]||{prep:"21:00",bcSun:"11:00",bcWed:"20:15"}[k];
+const BC={cf1:[["patata",1]],cf2:[["quinoa",60]],cf3:[["arrozint",60]],cf4:[["boniato",1]],cf5:[["arrozrojo",60]],
+  ch1:[["patata",1]],ch2:[["quinoa",60],["huevo",2]],ch3:[["boniato",1]],cc1:[["boniato",1]],cc2:[["arrozrojo",60]],cc3:[["guiso",1]],cc4:[["quinoa",60]],
+  cl1:[["guiso",1]],cl2:[["guiso",1]],df1:[["crema","Crema de calabacín y puerro"]],df2:[["menestra",1]],df3:[["crema","Puré de coliflor"]],
+  dh1:[["crema","Crema de puerro y calabacín"]],dh3:[["menestra",1],["codorniz",9]],dv3:[["crema","Crema de calabaza"],["hummus",1]],
+  dv5:[["crema","Crema de calabaza y zanahoria"]],b3:[["porridge",1]],b1:[["crepes",1]],dv2:[["crepes",1]]};
+const GR={quinoa:["quinoa",15],arrozrojo:["arroz rojo",35],arrozint:["arroz integral",35]};
+const yList=a=>{a=[...new Set(a)];return a.length<2?a.join(""):a.slice(0,-1).join(", ")+" y "+a[a.length-1]};
+const sessionOf=d=>{const mon=mondayOf(d),i=dowIdx(d);return i<=2?{mon,w:0,rel:i}:{mon,w:1,rel:i-3}};
+const sessionDate=(mon,w)=>w===0?addDays(mon,-1):addDays(mon,2);
+const hasBase=id=>(BC[id]||[]).some(x=>x[0]!=="crepes");
+function batchFor(mon,w){
+  const plan=planFor(mon),idx=w===0?[0,1,2]:[3,4,5,6];
+  const a={patata:[],boniato:[],huevo:0,codorniz:0,porridge:0,crepesN:0,crepesG:0,crepesH:0,hummus:0,menestra:0},gr={quinoa:[0,[]],arrozrojo:[0,[]],arrozint:[0,[]]},guisos=[],cremas=[],veg=new Set();
+  idx.forEach((di,rel)=>{const p=plan[di],dn=DOW[di];
+    [p.b,p.l,p.d].forEach(id=>{const bc=BC[id]||[];
+      bc.forEach(([k,v])=>{
+        if(k==="patata"||k==="boniato")a[k].push(dn);
+        else if(gr[k]){gr[k][0]+=v;gr[k][1].push(dn)}
+        else if(k==="guiso")guisos.push([id,dn]);
+        else if(k==="crema")cremas.push([v,dn,id]);
+        else if(k==="crepes"){if(rel<2){a.crepesN++;if(id==="b1")a.crepesG+=50;else a.crepesH+=60}}
+        else a[k]+=v});
+      if(id!==p.b&&!bc.some(x=>x[0]==="guiso"))R[id].ing.forEach(i=>{if(i[3]==="ver"&&!["Ajo","Perejil fresco","Jengibre fresco","Limón","Patata","Boniato"].includes(i[0]))veg.add(i[0].replace(/ \(.*\)/,"").toLowerCase())});
+    })});
+  const T=[];
+  if(a.boniato.length)T.push({e:"🍠",t:`Asa ${a.boniato.length} ${a.boniato.length>1?"boniatos enteros":"boniato entero"} al horno a 200 °C, unos 40 min (para el ${yList(a.boniato)}).`,min:5});
+  if(a.patata.length)T.push({e:"🥔",t:`Cuece ${a.patata.length} ${a.patata.length>1?"patatas":"patata"} con piel, 25 min. Pélalas en frío y a la nevera: el almidón resistente necesita 24 h (para el ${yList(a.patata)}).`,min:5});
+  Object.entries(gr).forEach(([k,[g,ds]])=>{if(g)T.push({e:"🍚",t:`Lava bien y cuece ${g} g de ${GR[k][0]}, ${GR[k][1]} min (para el ${yList(ds)}).`,min:4})});
+  guisos.forEach(([id,dn])=>T.push({e:"🍲",t:`${R[id].n}, para el ${dn}. Los guisos ganan de un día para otro.`,min:15,rec:id}));
+  if(a.porridge)T.push({e:"🥣",t:`Porridge para ${a.porridge} ${a.porridge>1?"desayunos":"desayuno"}: ${40*a.porridge} g de quinoa o arroz rojo y ${200*a.porridge} ml de bebida vegetal, con la manzana y las especias. La fruta fresca y la proteína, al servir.`,min:8,rec:"b3"});
+  cremas.forEach(([n,dn,id])=>T.push({e:"🥣",t:`${n}, para la cena del ${dn}.`,min:10,rec:id}));
+  if(a.menestra)T.push({e:"🥦",t:`Menestra al vapor para ${a.menestra} ${a.menestra>1?"cenas":"cena"}: judías verdes, zanahoria y alcachofa, 10–12 min, que quede firme.`,min:8});
+  if(a.huevo)T.push({e:"🥚",t:`Cuece ${a.huevo} huevos 10 min y guárdalos con cáscara (aguantan 4 días).`,min:2});
+  if(a.codorniz)T.push({e:"🥚",t:`Cuece ${a.codorniz} huevos de codorniz 3 min.`,min:3});
+  if(a.hummus)T.push({e:"🫘",t:"Haz el hummus: aguanta 4 días en un tarro cerrado.",min:5,rec:"dv3"});
+  if(a.crepesN)T.push({e:"🥞",t:`Bate la masa de crepes para ${a.crepesN} ${a.crepesN>1?"comidas":"comida"} (aguanta 2 días en la nevera).${a.crepesH?` Para los salados, ${a.crepesH} g de harina de sarraceno.`:""}`,min:5});
+  if(veg.size)T.push({e:"🔪",t:`Lava y corta la verdura del resto de platos y guárdala en táperes: ${yList([...veg])}.`,min:15});
+  T.push({e:"🫙",t:"Reparte en tarros de cristal y etiqueta cada uno con el día. Lo cocinado aguanta 3–4 días en la nevera. El pescado, siempre en el momento.",min:5});
+  const min=Math.round(Math.max(40,T.reduce((s,x)=>s+x.min,0)*0.75+10)/5)*5;
+  return {date:sessionDate(mon,w),idx,T,night:a.crepesG?`La noche antes, pon ${a.crepesG} g de trigo sarraceno en remojo para la masa de crepes.`:"",min,plan,mon,w};
+}
+function prepFor(d){
+  const t=addDays(d,1),tp=dayPlan(t),s=sessionOf(t),out=[];
+  if(dowIdx(t)===6||dowIdx(t)===2){const mon=dowIdx(t)===6?addDays(t,1):mondayOf(t),w=dowIdx(t)===6?0:1;
+    if(mon<=END){const b=batchFor(mon,w);out.push(["🍱",`Mañana toca batch cooking (unos ${b.min} min, a las ${TM(w?"bcWed":"bcSun")}). Revisa que tienes la compra.`,`${ymd(mon)}|${w}`]);if(b.night)out.push(["🫙",b.night])}}
+  if(tp.b==="b1")out.push(["🫙",s.rel<2?"Mañana hay crepes: usa la masa del batch. Si no la hiciste, pon 50 g de trigo sarraceno en remojo.":"Pon 50 g de trigo sarraceno en remojo para los crepes del desayuno."]);
+  if(R[tp.l].c==="cf"||R[tp.d].c==="df")out.push(["🐟","Si el pescado de mañana está congelado, pásalo esta noche del congelador a la nevera."]);
+  const pv=R[tp.l].prev;if(pv)out.push(["🥔",`Mañana usas ${pv==="patata"?"patata cocida":"boniato"} del batch: comprueba que te queda. Si no, cuécelo ahora.`]);
+  if(tp.b==="b3")out.push(["🥣","Desayuno de porridge: deja el tarro a mano y la proteína vegana preparada."]);
+  return out;
+}
+function prepCard(dk,c){
+  const items=prepFor(selDate);if(!items.length||selDate>=END)return "";
+  return `<section class="meal" style="--cc:var(--trigo)"><div class="meal-h"><span class="badge" style="--cc:var(--trigo)"><span class="e">🌙</span></span>
+    <div><div class="meal-k">Para esta noche<span class="tm">${TM("prep")}</span></div><span class="meal-n">Deja listo lo de mañana</span></div>${tick("prep",c)}</div>
+    <div class="meal-b">${items.map(p=>`<p class="small"><span class="e">${p[0]}</span> ${esc(p[1])}${p[2]?` <button type="button" class="todaylink" data-batch="${p[2]}">Ver el plan</button>`:""}</p>`).join("")}</div></section>`;
+}
+function batchToday(){
+  const i=dowIdx(selDate);if(i!==6&&i!==2)return "";
+  const mon=i===6?addDays(selDate,1):mondayOf(selDate),w=i===6?0:1;if(mon>END)return "";
+  const b=batchFor(mon,w),c=S.checks[ymd(b.date)]||{},done=b.T.filter((x,j)=>c["bc"+j]).length;
+  return `<div class="card sun"><h3><span class="e">🍱</span> Hoy toca batch cooking</h3><p class="small">A las ${TM(w?"bcWed":"bcSun")}, unos ${b.min} min, para ${w?"jueves a domingo":"lunes a miércoles"}. ${done?`Llevas ${done} de ${b.T.length} tareas.`:""}</p><button type="button" class="btn" data-batch="${ymd(mon)}|${w}">Ver el plan</button></div>`;
+}
+const bcChip=id=>hasBase(id)?`<span class="fchip"><span class="e">🍱</span>Base lista del batch cooking</span>`:"";
+function batchCard(mon){
+  const a=batchFor(mon,0),b=batchFor(mon,1);
+  return `<div class="card sun"><h3><span class="e">🍱</span> Batch cooking de la semana</h3><p class="small">Dos sesiones cortas y entre semana solo calientas y haces el pescado o la plancha. Sin microondas: cazo u horno.</p>
+  <div class="btnrow"><button type="button" class="btn" data-batch="${ymd(mon)}|0">Domingo ${a.date.getDate()}: de lunes a miércoles, ${a.min} min</button><button type="button" class="btn alt" data-batch="${ymd(mon)}|1">Miércoles ${b.date.getDate()}: de jueves a domingo, ${b.min} min</button></div></div>`;
+}
+function openBatch(mk,w,keepY){
+  const mon=parseDk(mk),b=batchFor(mon,w),sk=ymd(b.date),c=dayChecks(sk),done=b.T.filter((x,j)=>c["bc"+j]).length;
+  const y=sheet.scrollTop;
+  openSheet(`<div class="bigb" style="--cc:var(--curcuma)"><span class="e">🍱</span></div>
+  <h2 id="sheetTitle">Batch cooking del ${longDate(b.date).replace(/^\w/,x=>x.toLowerCase())}</h2>
+  <p class="muted small">Para ${w?"jueves, viernes, sábado y domingo":"lunes, martes y miércoles"}. Unos ${b.min} min haciendo varias cosas a la vez: empieza por lo que más tarda (horno, arroz y guisos) y, mientras, haz las cremas y corta la verdura.</p>
+  ${b.night?`<div class="card sun small"><span class="e">🌙</span> ${esc(b.night)}</div>`:""}
+  <div class="progress"><i style="width:${Math.round(done/b.T.length*100)}%"></i></div><p class="muted small">${done} de ${b.T.length} hechas</p>
+  ${b.T.map((x,j)=>`<div class="bcrow"><button type="button" class="item" data-bck="${mk}|${w}|${j}" aria-pressed="${!!c["bc"+j]}"><span class="tick sm" aria-hidden="true">${CHECK}</span><span class="nm"><span class="e">${x.e}</span> ${esc(x.t)}</span></button>${x.rec?`<button type="button" class="ghost" data-rec="${x.rec}" data-back="${mk}|${w}">Receta</button>`:""}</div>`).join("")}
+  <h3 style="margin-top:18px">Así te quedan esos días</h3>
+  ${b.idx.map(di=>{const p=b.plan[di];return `<div class="row" style="border-top:1px solid var(--line);padding-left:0;padding-right:0">${badge(p.l)}<span><span class="k">${cap(DOW[di])} ${addDays(mon,di).getDate()}</span>${esc(R[p.l].n)}${hasBase(p.l)?" 🍱":""}<br><span class="muted small">Cena: ${esc(R[p.d].n)}${hasBase(p.d)?" 🍱":""}</span></span></div>`}).join("")}
+  <p class="muted small">🍱 = tienes la base hecha: solo calentar y montar el plato.</p>`);
+  if(keepY)sheet.scrollTop=y;
+}
+
 /* ---------- Deporte y peso ---------- */
 const SPORTS=[["Caminar","🚶‍♀️"],["Correr","🏃‍♀️"],["Bici","🚴‍♀️"],["Fuerza","🏋️‍♀️"],["Fit boxing","🥊"],["Ballet fit","🩰"],["Yoga o pilates","🧘‍♀️"],["Natación","🏊‍♀️"],["Otro","⚡"]];
 const INTS=[["suave","Suave"],["media","Media"],["intensa","Intensa"]];
@@ -773,8 +860,8 @@ document.addEventListener("change",e=>{if(e.target.id==="progDate"){if(e.target.
 const sheet=document.getElementById("sheet"),sheetBg=document.getElementById("sheetBg");let lastFocus=null;
 function openSheet(html){lastFocus=document.activeElement;sheet.innerHTML=`<div class="grab"></div><button type="button" class="ghost closebtn" data-close>Cerrar</button>`+html;sheetBg.style.display="block";requestAnimationFrame(()=>sheet.classList.add("open"));sheet.scrollTop=0;sheet.querySelector("[data-close]").focus()}
 function closeSheet(){if(!sheet.classList.contains("open"))return;sheet.classList.remove("open");sheetBg.style.display="none";if(lastFocus&&document.contains(lastFocus))lastFocus.focus()}
-function openRecipe(id){const r=R[id];
-  openSheet(`<div class="bigb" style="--cc:${CC[r.c]}"><span class="e">${EM[id]}</span></div>
+function openRecipe(id,back){const r=R[id];
+  openSheet((back?`<button type="button" class="ghost" data-batch="${back}">‹ Volver al batch</button>`:"")+`<div class="bigb" style="--cc:${CC[r.c]}"><span class="e">${EM[id]}</span></div>
   <h2 id="sheetTitle">${esc(r.n)}</h2><p class="muted small">${tagHtml(id)} <span class="e">⏱️</span> ${esc(r.t)}</p>
   ${r.plate?`<p class="small muted">½ plato ${esc(r.plate[0].toLowerCase())}, ¼ ${esc(r.plate[1].toLowerCase())}${r.c==="cl"?", con la legumbre como plato único":`, ¼ ${esc(r.plate[2].toLowerCase())}`}.</p>`:""}
   <h3 style="margin-top:16px">Ingredientes para ti</h3><ul class="ing">${r.ing.map(i=>`<li><span>${esc(i[0])}</span><span>${i[1]?fmtQty(i[1],i[2]):"al gusto"}</span></li>`).join("")}</ul>
@@ -790,9 +877,11 @@ document.getElementById("avoidBtn").onclick=openAvoid;
 /* ---------- Eventos ---------- */
 const keepScroll=fn=>{const y=scrollY;fn();scrollTo(0,y)};
 document.addEventListener("click",e=>{
-  const t=e.target.closest("[data-close],[data-rec],[data-ck],[data-allsup],[data-w],[data-go],[data-wk],[data-today],[data-ws],[data-rf],[data-shop],[data-delc],[data-st],[data-si],[data-addsport],[data-delsport],[data-delpeso]");
+  const t=e.target.closest("[data-close],[data-rec],[data-ck],[data-allsup],[data-w],[data-go],[data-wk],[data-today],[data-ws],[data-rf],[data-shop],[data-delc],[data-st],[data-si],[data-addsport],[data-delsport],[data-delpeso],[data-batch],[data-bck]");
   if(!t)return;
   if(t.dataset.close!==undefined)return closeSheet();
+  if(t.dataset.batch){const [mk,w]=t.dataset.batch.split("|");return openBatch(mk,+w)}
+  if(t.dataset.bck){const [mk,w,j]=t.dataset.bck.split("|"),b=batchFor(parseDk(mk),+w),c=dayChecks(ymd(b.date));c["bc"+j]=!c["bc"+j];save();return openBatch(mk,+w,true)}
   if(t.dataset.st){spType=t.dataset.st;return keepScroll(render)}
   if(t.dataset.si){spInt=t.dataset.si;return keepScroll(render)}
   if(t.dataset.addsport!==undefined){const n=parseInt(spMinVal,10);const inp=document.getElementById("spMin");if(!(n>0&&n<=600)){if(inp){inp.focus();inp.placeholder="¿Minutos?"}return}
@@ -800,7 +889,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.delsport!==undefined){const dk=route()==="progreso"?progDate:ymd(selDate);(S.sport[dk]||[]).splice(+t.dataset.delsport,1);if(S.sport[dk]&&!S.sport[dk].length)delete S.sport[dk];save();return keepScroll(render)}
   if(t.dataset.delpeso){delete S.weights[t.dataset.delpeso];save();return keepScroll(render)}
   if(t.dataset.delc!==undefined){const wk=ymd(addDays(START,weekSel*7));S.custom[wk]=(S.custom[wk]||[]).filter(x=>x!==t.dataset.delc);save();return keepScroll(renderCompra)}
-  if(t.dataset.rec)return openRecipe(t.dataset.rec);
+  if(t.dataset.rec)return openRecipe(t.dataset.rec,t.dataset.back);
   const ckDate=route()==="suplementos"?today():selDate;
   if(t.dataset.ck){const c=dayChecks(ymd(ckDate));c[t.dataset.ck]=!c[t.dataset.ck];save();return keepScroll(render)}
   if(t.dataset.allsup){const c=dayChecks(ymd(today()));const ti=TOMAS.findIndex(x=>x.k===t.dataset.allsup);SUP.forEach(s=>{if(s.p[ti]>0)c[`s-${t.dataset.allsup}-${s.id}`]=true});save();return keepScroll(render)}
