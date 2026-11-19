@@ -292,6 +292,14 @@ const R = {
   ing:[["Quinoa o arroz rojo",40,"g","cer"],["Manzana",0.5,"ud","fru"],["Arándanos",50,"g","fru"],["Bebida de arroz o de coco (sin azúcar)",200,"ml","des"],["Canela de Ceilán",0,"","des"],["Cúrcuma en polvo",0,"","des"],["Jengibre en polvo",0,"","des"],["Coco rallado",0,"","des"],["Semillas de calabaza",0,"","des"],["Proteína vegana Iswari (plátano y vainilla)",1,"cacito","her"]],
   st:["Lava bien la quinoa o el arroz rojo y cuécelo. Si lo haces para 3 días, triplica la cantidad.","Añade la bebida vegetal, unos trocitos de manzana, canela, cúrcuma y jengibre, y dale un golpe de hervor. Si quieres, bátelo.","Guarda en la nevera en tarros de cristal, sin la fruta (se oxida).","Templa la ración del día en un cazo, sin microondas.","Al servir, añade los arándanos, una cucharada de semillas de calabaza y coco rallado.","Termina con un cacito de proteína vegana Iswari (sigue la dosis del envase) y remueve bien. Añádela al final, ya templado, para que no se apelmace."],
   nota:"Es el desayuno ideal para dejar hecho el domingo."},
+ b4:{n:"Tostadas de trigo sarraceno con tahini y AOVE",c:"b",t:"5 min",
+  ing:[["Tortas de trigo sarraceno (tipo Le Pain des Fleurs)",2,"ud","des"],["Yogur de coco 100% natural",80,"g","des"],["Tahini",0,"","des"],AOVE,SAL],
+  st:["Empieza por la fruta con unas cucharadas de yogur de coco, mientras tomas la infusión.","Unta las tortas con una capa fina de tahini o riégalas con un hilo de AOVE y una pizca de sal rosa."],
+  nota:"Desayuno sin huevo ni carne, para no repetir proteína en días seguidos."},
+ b5:{n:"Crepes de trigo sarraceno con tahini y AOVE",c:"b",t:"15 min (+ remojo la noche antes)",prev:"sarraceno",
+  ing:[["Trigo sarraceno en grano",50,"g","cer"],["Yogur de coco 100% natural",80,"g","des"],["Tahini",0,"","des"],AOVE,SAL],
+  st:["La noche anterior, pon el trigo sarraceno en remojo con agua.","Por la mañana, cuélalo, lávalo y bátelo con un poco de agua y una pizca de sal rosa hasta tener una masa fluida.","Haz los crepes en la sartén con unas gotas de AOVE, vuelta y vuelta.","Úntalos con tahini o AOVE. Antes, la fruta con yogur de coco."],
+  nota:"Sin huevo: así el huevo queda solo para comidas y cenas y no se repite en días seguidos."},
 
  cf1:{n:"Merluza al horno con patata y judías verdes",c:"cf",t:"35 min",prev:"patata",plate:["Judías verdes y cebolla","Patata cocida y refrigerada","Merluza"],
   ing:[["Merluza",150,"g","pes"],["Patata",1,"ud","ver"],["Judías verdes",150,"g","ver"],["Cebolla",0.5,"ud","ver"],["Limón",0.5,"ud","ver"],["Tomillo",0,"","des"],AOVE],
@@ -440,11 +448,31 @@ function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.im
 function shuffle(arr,r){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 const pool=c=>Object.keys(R).filter(k=>R[k].c===c);
 const planCache={};
+/* Reglas desde el 23 de noviembre: carne o pescado solo una vez al día, y la misma proteína nunca en días seguidos */
+const RULES_FROM=new Date(2026,10,23);
+const groupsOf=(l,d)=>{const g=new Set();if(l==="cf"||d==="df")g.add("pes");if(l==="ch"||d==="dh")g.add("hue");if(l==="cc")g.add("car");if(l==="cl")g.add("leg");return g};
+function uniquePerms(a){const out=[];const rec=(rest,cur)=>{if(!rest.length){out.push(cur);return}const seen=new Set();rest.forEach((x,i)=>{if(seen.has(x))return;seen.add(x);rec(rest.filter((_,j)=>j!==i),cur.concat(x))})};rec(a,[]);return out}
+let VALID=null;
+function validWeeks(){if(VALID)return VALID;VALID=[];
+  const LP=uniquePerms(["cf","cf","ch","cc","cc","cl","cl"]),DP=uniquePerms(["df","df","dh","dh","dv","dv","dv"]);
+  for(const L of LP){for(const D of DP){const g=[];let ok=true;
+    for(let i=0;i<7;i++){const l=L[i],d=D[i];
+      if((l==="cf"||l==="cc")&&d==="df"){ok=false;break}
+      if(l==="ch"&&d==="dh"){ok=false;break}
+      g.push(groupsOf(l,d))}
+    if(!ok)continue;
+    for(let i=0;i<6&&ok;i++)for(const x of g[i])if(g[i+1].has(x)){ok=false;break}
+    if(ok)VALID.push([L,D,g])}}
+  return VALID}
 function planFor(mon){
   const key=ymd(mon); if(planCache[key]) return planCache[key];
   const r=rng(weekNum(mon)*7919+13);
   let L,D;
-  for(let tries=0;tries<500;tries++){
+  const NEW=mon>=RULES_FROM;
+  if(NEW){const V=validWeeks(),pv=planFor(addDays(mon,-7))[6],pg=groupsOf(R[pv.l].c,R[pv.d].c);
+    let best=1e9,cands=[];for(const v of V){let c=0;for(const x of v[2][0])if(pg.has(x))c+=(x==="pes"?1:10);if(c<best){best=c;cands=[v]}else if(c===best)cands.push(v)}
+    const v=cands[Math.floor(r()*cands.length)];L=v[0];D=v[1];}
+  else for(let tries=0;tries<500;tries++){
     L=shuffle(["cf","cf","ch","cc","cc","cl","cl"],r);
     D=shuffle(["df","df","dh","dh","dv","dv","dv"],r);
     let ok=true;
@@ -463,10 +491,11 @@ function planFor(mon){
   const lp={},dp={}; ["cf","ch","cc","cl"].forEach(c=>lp[c]=take(c,want(L,c))); ["df","dh","dv"].forEach(c=>dp[c]=take(c,want(D,c)));
   // las cenas vegetales con legumbre no caen el día de legumbre en la comida
   dp.dv.sort((x,y)=>(R[x].leg?1:0)-(R[y].leg?1:0));
-  const dvDays=[...Array(7).keys()].filter(i=>D[i]==="dv").sort((x,y)=>(L[y]==="cl"?1:0)-(L[x]==="cl"?1:0));
+  const legRisk=i=>(L[i]==="cl"?2:0)+(NEW&&(L[i-1]==="cl"||L[i+1]==="cl")?1:0);
+  const dvDays=[...Array(7).keys()].filter(i=>D[i]==="dv").sort((x,y)=>legRisk(y)-legRisk(x));
   const dvMap={}; dvDays.forEach((d,j)=>dvMap[d]=dp.dv[j]);
   const next=(c,i)=>c==="dv"?dvMap[i]:(c[0]==="c"?lp[c]:dp[c]).shift();
-  const B=shuffle(["b1","b1","b1","b2","b3","b3","b3"],r);
+  const B=shuffle(NEW?["b3","b3","b3","b4","b4","b5","b5"]:["b1","b1","b1","b2","b3","b3","b3"],r);
   const days=[];
   for(let i=0;i<7;i++){
     const l=next(L[i],i); const d=next(D[i],i);
@@ -513,7 +542,7 @@ const FEST={"2026-12-08":"Inmaculada","2026-12-24":"Nochebuena","2026-12-25":"Na
 
 /* ---------- Iconos y colores ---------- */
 const CC={cf:"var(--mar)",df:"var(--mar)",ch:"var(--curcuma)",dh:"var(--curcuma)",cc:"var(--papaya)",cl:"var(--lenteja)",dv:"var(--salvia)",b:"var(--trigo)",fut:"var(--lenteja)"};
-const EM={b1:"🥞",b2:"🍞",b3:"🥣",cf1:"🐟",cf2:"🐟",cf3:"🦑",cf4:"🐠",cf5:"🐟",ch1:"🍳",ch2:"🥚",ch3:"🍳",cc1:"🍗",cc2:"🍛",cc3:"🍲",cc4:"🥘",cl1:"🍲",cl2:"🥘",cl3:"🍝",df1:"🐟",df2:"🦪",df3:"🐟",df4:"🦑",df5:"🐟",dh1:"🍳",dh2:"🥚",dh3:"🥚",dv1:"🍜",dv2:"🌯",dv3:"🥕",dv4:"🍝",dv5:"🎃",fut1:"🫘",fut2:"🫘"};
+const EM={b1:"🥞",b2:"🍞",b3:"🥣",b4:"🍞",b5:"🥞",cf1:"🐟",cf2:"🐟",cf3:"🦑",cf4:"🐠",cf5:"🐟",ch1:"🍳",ch2:"🥚",ch3:"🍳",cc1:"🍗",cc2:"🍛",cc3:"🍲",cc4:"🥘",cl1:"🍲",cl2:"🥘",cl3:"🍝",df1:"🐟",df2:"🦪",df3:"🐟",df4:"🦑",df5:"🐟",dh1:"🍳",dh2:"🥚",dh3:"🥚",dv1:"🍜",dv2:"🌯",dv3:"🥕",dv4:"🍝",dv5:"🎃",fut1:"🫘",fut2:"🫘"};
 const PAPAYA='<svg viewBox="0 0 32 32" width="1.15em" height="1.15em" style="vertical-align:-0.2em" aria-hidden="true"><ellipse cx="16" cy="16" rx="11" ry="14" fill="#F2A33A"/><ellipse cx="16" cy="16" rx="8" ry="11" fill="#F07A4A"/><ellipse cx="16" cy="17" rx="3.4" ry="6" fill="#4A2E2A"/><circle cx="15" cy="14" r="1" fill="#2a1a18"/><circle cx="17" cy="18" r="1" fill="#2a1a18"/></svg>';
 const FE={"Piña":"🍍","Papaya":PAPAYA,"Mango":"🥭","Plátano":"🍌","Pera":"🍐","Manzana":"🍏","Arándanos":"🫐","Frutos rojos (sin fresas, valen congelados)":"🍒","Compota de manzana casera":"🍎"};
 const fe=f=>FE[f]&&FE[f].startsWith("<")?FE[f]:`<span class="e">${FE[f]||"🍎"}</span>`;
@@ -726,7 +755,7 @@ const BC={cf1:[["patata",1]],cf2:[["quinoa",60]],cf3:[["arrozint",60]],cf4:[["bo
   ch1:[["patata",1]],ch2:[["quinoa",60],["huevo",2]],ch3:[["boniato",1]],cc1:[["boniato",1]],cc2:[["arrozrojo",60]],cc3:[["guiso",1]],cc4:[["quinoa",60]],
   cl1:[["guiso",1]],cl2:[["guiso",1]],df1:[["crema","Crema de calabacín y puerro"]],df2:[["menestra",1]],df3:[["crema","Puré de coliflor"]],
   dh1:[["crema","Crema de puerro y calabacín"]],dh3:[["menestra",1],["codorniz",9]],dv3:[["crema","Crema de calabaza"],["hummus",1]],
-  dv5:[["crema","Crema de calabaza y zanahoria"]],b3:[["porridge",1]],b1:[["crepes",1]],dv2:[["crepes",1]]};
+  dv5:[["crema","Crema de calabaza y zanahoria"]],b3:[["porridge",1]],b1:[["crepes",1]],b5:[["crepes",1]],dv2:[["crepes",1]]};
 const GR={quinoa:["quinoa",15],arrozrojo:["arroz rojo",35],arrozint:["arroz integral",35]};
 const yList=a=>{a=[...new Set(a)];return a.length<2?a.join(""):a.slice(0,-1).join(", ")+" y "+a[a.length-1]};
 const sessionOf=d=>{const mon=mondayOf(d),i=dowIdx(d);return i<=2?{mon,w:0,rel:i}:{mon,w:1,rel:i-3}};
@@ -742,7 +771,7 @@ function batchFor(mon,w){
         else if(gr[k]){gr[k][0]+=v;gr[k][1].push(dn)}
         else if(k==="guiso")guisos.push([id,dn]);
         else if(k==="crema")cremas.push([v,dn,id]);
-        else if(k==="crepes"){if(rel<2){a.crepesN++;if(id==="b1")a.crepesG+=50;else a.crepesH+=60}}
+        else if(k==="crepes"){if(rel<2){a.crepesN++;if(id==="b1"||id==="b5")a.crepesG+=50;else a.crepesH+=60}}
         else a[k]+=v});
       if(id!==p.b&&!bc.some(x=>x[0]==="guiso"))R[id].ing.forEach(i=>{if(i[3]==="ver"&&!["Ajo","Perejil fresco","Jengibre fresco","Limón","Patata","Boniato"].includes(i[0]))veg.add(i[0].replace(/ \(.*\)/,"").toLowerCase())});
     })});
@@ -767,7 +796,7 @@ function prepFor(d){
   const t=addDays(d,1),tp=dayPlan(t),s=sessionOf(t),out=[];
   if(dowIdx(t)===6||dowIdx(t)===2){const mon=dowIdx(t)===6?addDays(t,1):mondayOf(t),w=dowIdx(t)===6?0:1;
     if(mon<=END){const b=batchFor(mon,w);out.push(["🍱",`Mañana toca batch cooking (unos ${b.min} min, a las ${TM(w?"bcWed":"bcSun")}). Revisa que tienes la compra.`,`${ymd(mon)}|${w}`]);if(b.night)out.push(["🫙",b.night])}}
-  if(tp.b==="b1")out.push(["🫙",s.rel<2?"Mañana hay crepes: usa la masa del batch. Si no la hiciste, pon 50 g de trigo sarraceno en remojo.":"Pon 50 g de trigo sarraceno en remojo para los crepes del desayuno."]);
+  if(tp.b==="b1"||tp.b==="b5")out.push(["🫙",s.rel<2?"Mañana hay crepes: usa la masa del batch. Si no la hiciste, pon 50 g de trigo sarraceno en remojo.":"Pon 50 g de trigo sarraceno en remojo para los crepes del desayuno."]);
   if(R[tp.l].c==="cf"||R[tp.d].c==="df")out.push(["🐟","Si el pescado de mañana está congelado, pásalo esta noche del congelador a la nevera."]);
   const pv=R[tp.l].prev;if(pv)out.push(["🥔",`Mañana usas ${pv==="patata"?"patata cocida":"boniato"} del batch: comprueba que te queda. Si no, cuécelo ahora.`]);
   if(tp.b==="b3")out.push(["🥣","Desayuno de porridge: deja el tarro a mano y la proteína vegana preparada."]);
